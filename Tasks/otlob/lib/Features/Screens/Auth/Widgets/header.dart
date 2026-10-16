@@ -8,10 +8,21 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Column(children: [
-          
-        
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            subTitle,
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
         ],
-      ));
+      ),
+    );
   }
 }
