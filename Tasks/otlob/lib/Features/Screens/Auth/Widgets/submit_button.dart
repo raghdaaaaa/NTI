@@ -6,26 +6,35 @@ class SubmitButton extends StatelessWidget {
     required this.onTap,
     required this.title,
     this.isLoading = false,
-    this.isVisiable = true,
   });
   final Function()? onTap;
   final String title;
   final bool isLoading;
-  final bool isVisiable;
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFF5C39),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        fixedSize: Size(456, 50),
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFF5C39),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: onTap,
+        child: isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
-      onPressed: onTap,
-      child: isLoading
-          ? const CircularProgressIndicator(color: Colors.white)
-          : Text(title),
     );
   }
 }

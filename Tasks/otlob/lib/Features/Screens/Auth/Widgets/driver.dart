@@ -6,17 +6,16 @@ class Driver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Or With",
-          style: TextStyle(
-            color: Colors.orange,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+        const Expanded(child: Divider(color: Colors.black26, thickness: 1)),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'Or With',
+            style: TextStyle(color: Colors.grey, fontSize: 14),
           ),
         ),
-        SizedBox(width: 10),
+        const Expanded(child: Divider(color: Colors.black26, thickness: 1)),
       ],
     );
   }

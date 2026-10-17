@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/Core/Constants/app_assets.dart';
+import 'package:otlob/Core/Routes/app_routes.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/driver.dart';
+import 'package:otlob/Features/Screens/Auth/Widgets/footer.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/forms.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/header.dart';
+import 'package:otlob/Features/Screens/Auth/Widgets/log_option.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/remember.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/submit_button.dart';
 
@@ -28,32 +32,44 @@ class _LogInScreenState extends State<LogInScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               const Header(
-                title: "Hi , Welcome Back !",
+                title: "Hi, Welcome Back! 👋",
                 subTitle: "Hello again, you've been missed!",
               ),
-              const SizedBox(height: 50),
-              Forms(
-                label: "Email",
-                hint: "raghdaa@gmail.com",
-                textController: emailController,
-              ),
-              const SizedBox(height: 20),
-              Forms(
-                label: "Password",
+              const SizedBox(height: 30),
+              const Forms(text: "Email", hint: "Enter your email"),
+              const SizedBox(height: 16),
+              const Forms(
+                text: "Password",
                 hint: "Enter your password",
                 isPassword: true,
-                textController: passwordController,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               const Remember(),
               const SizedBox(height: 20),
-              SubmitButton(onTap: () {}, title: "Login"),
+              SubmitButton(
+                onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+                title: "Login",
+              ),
               const SizedBox(height: 20),
               const Driver(),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  LogOption(imagePath: AppAssets.github, text: "GitHub"),
+                  const SizedBox(width: 16),
+                  LogOption(imagePath: AppAssets.gitlab, text: "GitLab"),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Footer(
+                text: "Don't have an account?",
+                actionText: "Sign Up",
+                onTap: () => Navigator.pushNamed(context, AppRoutes.signUp),
+              ),
             ],
           ),
         ),

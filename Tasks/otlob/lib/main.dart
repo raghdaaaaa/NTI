@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:otlob/Features/Screens/Auth/Screens/log_in.dart';
+import 'package:otlob/Core/Constants/routes.dart';
+import 'package:otlob/Core/Routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
-      home: const LogInScreen(),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: AppRoutes.signUp,
     );
   }
 }

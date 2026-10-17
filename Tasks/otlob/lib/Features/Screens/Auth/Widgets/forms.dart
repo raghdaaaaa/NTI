@@ -3,41 +3,52 @@ import 'package:flutter/material.dart';
 class Forms extends StatelessWidget {
   const Forms({
     super.key,
-    required this.label,
+    required this.text,
     required this.hint,
-    required this.textController,
-    this.icon,
     this.isPassword = false,
   });
 
-  final String label;
+  final String text;
   final String hint;
-  final IconData? icon;
   final bool isPassword;
-  final TextEditingController textController;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: textController,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Color(0xFFFF5C39)),
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        prefixIcon: icon != null ? Icon(icon) : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          textAlign: TextAlign.start,
+          style: const TextStyle(
+            color: Color(0xFFFF5C39),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        filled: true,
-        fillColor: Colors.white24,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black26, width: 1),
+        const SizedBox(height: 6),
+        TextFormField(
+          obscureText: isPassword,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.black26, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFFF5C39), width: 1.5),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

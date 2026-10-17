@@ -5,11 +5,11 @@ class Footer extends StatelessWidget {
     super.key,
     required this.text,
     required this.actionText,
-    required this.actionTap,
+    this.onTap,
   });
   final String text;
   final String actionText;
-  final VoidCallback actionTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +18,15 @@ class Footer extends StatelessWidget {
       children: [
         Text(text, style: const TextStyle(color: Colors.black54, fontSize: 14)),
         const SizedBox(width: 4),
-        Text(
-          actionText,
-          style: TextStyle(
-            color: Colors.orange,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+        GestureDetector(
+          onTap: onTap,
+          child: Text(
+            actionText,
+            style: const TextStyle(
+              color: Color(0xFFFF5C39),
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
