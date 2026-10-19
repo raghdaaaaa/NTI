@@ -33,17 +33,25 @@ class BrandChip extends StatelessWidget {
 class BrandsSection extends StatelessWidget {
   const BrandsSection({super.key});
 
+  static const List<String> _brands = ['Starbucks', 'Costa', 'Cilantro'];
+
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        BrandChip(name: 'Starbucks', isSelected: true),
-        SizedBox(width: 10),
-        BrandChip(name: 'Costa'),
-        SizedBox(width: 10),
-        BrandChip(name: 'Cilantro'),
-      ],
+    return SizedBox(
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _brands.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: BrandChip(
+              name: _brands[index],
+              isSelected: index == 0,
+            ),
+          );
+        },
+      ),
     );
   }
 }

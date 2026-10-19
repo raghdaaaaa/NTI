@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/Core/Constants/app_assets.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/brands_section.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/categories_section.dart';
@@ -19,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       brand: 'Starbucks',
       category: 'Frappuccino',
       price: 200,
-      imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80',
+      imagePath: AppAssets.drink,
     ),
     ProductModel(
       id: '2',
@@ -27,7 +28,7 @@ class HomeScreen extends StatelessWidget {
       brand: 'Starbucks',
       category: 'Cake',
       price: 155,
-      imageUrl: 'https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=400&q=80',
+      imagePath: AppAssets.cake,
     ),
     ProductModel(
       id: '3',
@@ -35,7 +36,7 @@ class HomeScreen extends StatelessWidget {
       brand: 'Starbucks',
       category: 'Frappuccino',
       price: 200,
-      imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80',
+      imagePath: AppAssets.drink,
     ),
     ProductModel(
       id: '4',
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
       brand: 'Starbucks',
       category: 'Cake',
       price: 155,
-      imageUrl: 'https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=400&q=80',
+      imagePath: AppAssets.cake,
     ),
   ];
 

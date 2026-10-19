@@ -25,46 +25,54 @@ class ProductCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image section
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                ),
-                child: Image.network(
-                  product.imageUrl,
-                  width: double.infinity,
-                  height: 130,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stack) => Container(
-                    height: 130,
-                    color: AppColors.divider,
-                    child: const Icon(Icons.image, color: AppColors.textLight, size: 40),
+          Expanded(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
                   ),
-                ),
-              ),
-              // Category tag
-              Positioned(
-                top: 10,
-                left: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.tagBg.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    product.category,
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                  child: Image.asset(
+                    product.imagePath,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    cacheWidth: 400,
+                    errorBuilder: (context, error, stack) => Container(
+                      color: AppColors.divider,
+                      child: const Icon(
+                        Icons.image,
+                        color: AppColors.textLight,
+                        size: 40,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                // Category tag
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.tagBg.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      product.category,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           // Info section
           Padding(
@@ -127,7 +135,11 @@ class ProductCard extends StatelessWidget {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.add, color: AppColors.white, size: 18),
+                      child: const Icon(
+                        Icons.add,
+                        color: AppColors.white,
+                        size: 18,
+                      ),
                     ),
                   ],
                 ),

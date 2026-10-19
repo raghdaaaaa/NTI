@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:otlob/Core/Routes/app_routes.dart';
 import 'package:otlob/Features/Screens/Auth/Screens/log_in.dart';
 import 'package:otlob/Features/Screens/Auth/Screens/sign_up.dart';
+import 'package:otlob/Features/Screens/Debug/debug_screen.dart';
+import 'package:otlob/Features/Screens/Details/Screens/details.dart';
+import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Screens/home_screen.dart';
 
 class AppRouter {
@@ -9,6 +12,9 @@ class AppRouter {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case AppRoutes.debug:
+        return MaterialPageRoute(builder: (_) => const DebugScreen());
+
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LogInScreen());
 
@@ -17,6 +23,12 @@ class AppRouter {
 
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+
+      case AppRoutes.details:
+        final product = settings.arguments as ProductModel;
+        return MaterialPageRoute(
+          builder: (_) => DetailsScreen(product: product),
+        );
 
       default:
         return MaterialPageRoute(

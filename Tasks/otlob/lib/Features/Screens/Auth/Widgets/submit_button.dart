@@ -6,15 +6,17 @@ class SubmitButton extends StatelessWidget {
     required this.onTap,
     required this.title,
     this.isLoading = false,
+    this.width,
   });
   final Function()? onTap;
   final String title;
   final bool isLoading;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: width ?? double.infinity,
       height: 55,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
