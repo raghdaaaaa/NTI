@@ -17,7 +17,7 @@ class ProductInfo extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: const [
-              _TagChip(label: 'Cilantro'),
+              _TagChip(label: 'Cilantro', bg: true),
               _TagChip(label: 'Donuts'),
             ],
           ),
@@ -47,21 +47,18 @@ class ProductInfo extends StatelessWidget {
           const Text(
             'ABOUT THIS ITEM',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               letterSpacing: 1,
+              fontWeight: FontWeight.w500,
               color: Colors.grey,
             ),
           ),
-          Text(
-            """Classic ring donuts hand-dipped in a signature\n 
-sugar glaze while still warm from the fryer.\n
-Light, pillowy and irresistibly sweet.""",
-            style: TextStyle(
-              fontSize: 12,
-              letterSpacing: 1,
-              height: 1,
-              color: Colors.grey.shade600,
-            ),
+          const SizedBox(height: 10),
+          const Text(
+            'Classic ring donuts hand-dipped in a signature sugar glaze '
+            'while still warm from the fryer. Light, pillowy and '
+            'irresistibly sweet.',
+            style: TextStyle(fontSize: 14, height: 1.5, color: Colors.grey),
           ),
         ],
       ),
@@ -70,26 +67,26 @@ Light, pillowy and irresistibly sweet.""",
 }
 
 class _TagChip extends StatelessWidget {
-  const _TagChip({required this.label}) : color = null;
+  const _TagChip({required this.label, this.bg = false});
   final String label;
-  final Color? color;
-
-  bool get isColor => color == null ? false : true;
+  final bool bg;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isColor ? color : AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        color: bg
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : const Color(0xFFF0F1F4),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 14,
-          color: isColor ? Colors.white : AppColors.primary,
+          fontWeight: FontWeight.w500,
+          color: bg ? AppColors.primary : Colors.grey.shade700,
         ),
       ),
     );
