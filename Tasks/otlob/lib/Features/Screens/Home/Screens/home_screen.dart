@@ -1,52 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:otlob/Core/Constants/app_assets.dart';
+import 'package:otlob/Core/shared/bottom_nav.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
-import 'package:otlob/Features/Screens/Home/Widgets/brands_section.dart';
+import 'package:otlob/Core/shared/brands_section.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/categories_section.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/home_app_bar.dart';
-import 'package:otlob/Features/Screens/Home/Widgets/home_bottom_nav.dart';
-import 'package:otlob/Features/Screens/Home/Widgets/home_search_bar.dart';
-import 'package:otlob/Features/Screens/Home/Widgets/product_card.dart';
+import 'package:otlob/Core/shared/search_bar.dart';
+import 'package:otlob/Core/shared/product_card.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/promo_banner.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/section_header.dart';
+import 'package:otlob/Features/Screens/Filter/models/filter_prod.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const List<ProductModel> _products = [
-    ProductModel(
-      id: '1',
-      name: 'Double Caramel Frappuccino',
-      brand: 'Starbucks',
-      category: 'Frappuccino',
-      price: 200,
-      imagePath: AppAssets.drink,
-    ),
-    ProductModel(
-      id: '2',
-      name: 'Blueberry Cheesecake',
-      brand: 'Starbucks',
-      category: 'Cake',
-      price: 155,
-      imagePath: AppAssets.cake,
-    ),
-    ProductModel(
-      id: '3',
-      name: 'Double Caramel Frappuccino',
-      brand: 'Starbucks',
-      category: 'Frappuccino',
-      price: 200,
-      imagePath: AppAssets.drink,
-    ),
-    ProductModel(
-      id: '4',
-      name: 'Blueberry Cheesecake',
-      brand: 'Starbucks',
-      category: 'Cake',
-      price: 155,
-      imagePath: AppAssets.cake,
-    ),
-  ];
+  static const List<ProductModel> _products = filterProducts;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     HomeAppBar(),
                     SizedBox(height: 18),
-                    HomeSearchBar(),
+                    HomeSearchBar(hint: 'Search for restaurants near you'),
                     SizedBox(height: 20),
                     PromoBanner(),
                     SizedBox(height: 24),
@@ -73,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(height: 24),
                     SectionHeader(title: 'Brands'),
                     SizedBox(height: 12),
-                    BrandsSection(),
+                    BrandsSection(items: ['Starbucks', 'Costa', 'Cilantro']),
                     SizedBox(height: 24),
                     SectionHeader(title: 'Popular right now'),
                     SizedBox(height: 16),
@@ -99,7 +66,10 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const HomeBottomNav(),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: BottomNav(currentIndex: 0, onTap: (i) {}),
+      ),
     );
   }
 }

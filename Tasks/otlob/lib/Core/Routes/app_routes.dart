@@ -7,4 +7,6 @@ class AppRoutes {
   static const String home = '/home';
   static const String details = '/details';
   static const String explore = '/explore';
+  static const String filter = '/filterc';
+  static const String filterb = '/filterb';
 }

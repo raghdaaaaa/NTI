@@ -31,9 +31,10 @@ class BrandChip extends StatelessWidget {
 }
 
 class BrandsSection extends StatelessWidget {
-  const BrandsSection({super.key});
+  final List<String> items;
+  final int selectedIndex;
 
-  static const List<String> _brands = ['Starbucks', 'Costa', 'Cilantro'];
+  const BrandsSection({super.key, required this.items, this.selectedIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +42,11 @@ class BrandsSection extends StatelessWidget {
       height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _brands.length,
+        itemCount: items.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: BrandChip(
-              name: _brands[index],
-              isSelected: index == 0,
-            ),
+            child: BrandChip(name: items[index], isSelected: index == 0),
           );
         },
       ),

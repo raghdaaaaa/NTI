@@ -133,7 +133,7 @@ class ProductCard extends StatelessWidget {
                       height: 30,
                       decoration: const BoxDecoration(
                         color: AppColors.primary,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: const Icon(
                         Icons.add,
