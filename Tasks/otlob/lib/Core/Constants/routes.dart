@@ -4,6 +4,7 @@ import 'package:otlob/Features/Screens/Auth/Screens/log_in.dart';
 import 'package:otlob/Features/Screens/Auth/Screens/sign_up.dart';
 import 'package:otlob/Features/Screens/Debug/debug_screen.dart';
 import 'package:otlob/Features/Screens/Details/Screens/details.dart';
+import 'package:otlob/Features/Screens/Explore/Screens/explore.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Screens/home_screen.dart';
 
@@ -29,6 +30,9 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => DetailsScreen(product: product),
         );
+
+      case AppRoutes.explore:
+        return MaterialPageRoute(builder: (_) => const Explore());
 
       default:
         return MaterialPageRoute(

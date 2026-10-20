@@ -81,6 +81,17 @@ class DebugScreen extends StatelessWidget {
               arguments: _dummyProduct,
             ),
           ),
+          _DebugNavCard(
+            icon: Icons.explore_rounded,
+            title: 'Explore Screen',
+            subtitle: '${AppRoutes.explore}',
+            color: const Color(0xFFFF6B6B),
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.explore,
+              // arguments: _dummyProduct,
+            ),
+          ),
         ],
       ),
     );

@@ -1,5 +1,5 @@
-class AppAssets {
-  AppAssets._();
+class AppIcons {
+  AppIcons._();
 
   static const String _icons = 'Assets/icons';
 
