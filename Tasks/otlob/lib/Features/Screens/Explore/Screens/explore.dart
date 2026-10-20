@@ -26,6 +26,7 @@ class _ExploreState extends State<Explore> {
         ],
       ),
     ),
+
     const Center(child: Text('Explore')),
     const Center(child: Text('Cart')),
     const Center(child: Text('Orders')),
@@ -36,9 +37,12 @@ class _ExploreState extends State<Explore> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_index],
-      bottomNavigationBar: BottomNav(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(top: 30),
+        child: BottomNav(
+          currentIndex: _index,
+          onTap: (i) => setState(() => _index = i),
+        ),
       ),
     );
   }

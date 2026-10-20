@@ -23,10 +23,10 @@ class Brands extends StatelessWidget {
           ),
         ),
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.all(10),
           sliver: SliverList.separated(
             itemCount: brands.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, __) => const SizedBox(height: 11),
             itemBuilder: (context, i) => BrandCard(brand: brands[i]),
           ),
         ),
@@ -43,9 +43,9 @@ class BrandCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
+      shadowColor: Colors.grey.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(20),
       elevation: 1,
-      shadowColor: Colors.black12,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {},
@@ -54,17 +54,17 @@ class BrandCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 45,
+                height: 45,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFEEE8),
-                  borderRadius: BorderRadius.circular(14),
+                  color: const Color.fromARGB(255, 251, 240, 236),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
                   brand.name[0],
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFFF5A36),
                   ),
@@ -75,12 +75,12 @@ class BrandCard extends StatelessWidget {
                 child: Text(
                   brand.name,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              const Icon(Icons.chevron_right, color: Colors.grey, size: 22),
             ],
           ),
         ),
