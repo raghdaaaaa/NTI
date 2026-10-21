@@ -37,22 +37,22 @@ class CartItemCard extends StatelessWidget {
             child: item.image != null
                 ? Image.asset(
                     item.image!,
-                    width: 80,
-                    height: 80,
+                    width: 90,
+                    height: 90,
                     fit: BoxFit.cover,
                   )
                 : Container(
-                    width: 80,
-                    height: 80,
+                    width: 90,
+                    height: 90,
                     color: const Color(0xFFF3F4F6),
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(10),
                     child: Text(
                       item.name,
                       textAlign: TextAlign.center,
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
           ),
@@ -66,7 +66,7 @@ class CartItemCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

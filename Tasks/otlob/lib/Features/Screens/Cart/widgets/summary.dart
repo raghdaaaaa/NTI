@@ -18,7 +18,15 @@ class OrderSummary extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withAlpha(40),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,12 +35,13 @@ class OrderSummary extends StatelessWidget {
             'Order summary',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 25),
           _Row('Subtotal', '$subtotal EGP'),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           _Row('Delivery fee', '$deliveryFee EGP'),
-          const Divider(height: 32),
+          const Divider(height: 50, thickness: 0.2),
           _Row('Total', '${subtotal + deliveryFee} EGP', isTotal: true),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -52,7 +61,7 @@ class _Row extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: isTotal ? 18 : 16,
+            fontSize: isTotal ? 18 : 15,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             color: isTotal ? Colors.black : Colors.grey,
           ),
@@ -60,7 +69,7 @@ class _Row extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: isTotal ? 18 : 16,
+            fontSize: isTotal ? 18 : 15,
             fontWeight: FontWeight.bold,
             color: isTotal ? AppColors.primary : Colors.black,
           ),

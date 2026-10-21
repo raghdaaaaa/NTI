@@ -10,48 +10,53 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CartHeader(
-                      title: 'Your Cart',
-                      subtitle: '2 items · 665 EGP',
-                    ),
-                  ],
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CartHeader(
+                        title: 'Your Cart',
+                        subtitle: '2 items · 665 EGP',
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SliverList.separated(
-            itemCount: 2,
-            itemBuilder: (context, index) {
-              return CartItemCard(
-                item: CartItemModel(
-                  name: 'name',
-                  price: 10,
-                  quantity: 1,
-                  brand: 'brand',
-                  category: 'category',
-                ),
-                onAdd: () {},
-                onRemove: () {},
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(height: 16);
-            },
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: 100)),
-          const SliverToBoxAdapter(
-            child: OrderSummary(subtotal: 640, deliveryFee: 25),
-          ),
-        ],
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverList.separated(
+              itemCount: 2,
+              itemBuilder: (context, index) {
+                return CartItemCard(
+                  item: CartItemModel(
+                    name: cartItems[index].name,
+                    price: cartItems[index].price,
+                    quantity: cartItems[index].quantity,
+                    brand: cartItems[index].brand,
+                    category: cartItems[index].category,
+                    image: cartItems[index].image,
+                  ),
+                  onAdd: () {},
+                  onRemove: () {},
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(height: 16);
+              },
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 50)),
+            const SliverToBoxAdapter(
+              child: OrderSummary(subtotal: 640, deliveryFee: 25),
+            ),
+          ],
+        ),
       ),
     );
   }
