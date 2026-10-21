@@ -10,4 +10,5 @@ class AppRoutes {
   static const String filter = '/filterc';
   static const String filterb = '/filterb';
   static const String cart = '/cart';
+  static const String orders = '/orders';
 }

@@ -40,7 +40,7 @@ class _ExploreState extends State<Explore> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(top: 30),
         child: BottomNav(
-          currentIndex: _index,
+          currentIndex: 1,
           onTap: (i) => setState(() => _index = i),
         ),
       ),

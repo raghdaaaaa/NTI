@@ -7,7 +7,7 @@ import 'package:otlob/Features/Screens/Auth/Widgets/forms.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/header.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/log_option.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/remember.dart';
-import 'package:otlob/Features/Screens/Auth/Widgets/submit_button.dart';
+import 'package:otlob/Core/shared/submit_button.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -51,7 +51,8 @@ class _LogInScreenState extends State<LogInScreen> {
               const Remember(),
               const SizedBox(height: 20),
               SubmitButton(
-                onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, AppRoutes.home),
                 title: "Login",
               ),
               const SizedBox(height: 20),

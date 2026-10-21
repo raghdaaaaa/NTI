@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/Core/shared/bottom_nav.dart';
 import 'package:otlob/Core/shared/cart_header.dart';
+import 'package:otlob/Core/shared/submit_button.dart';
 import 'package:otlob/Features/Screens/Cart/models/cart.dart';
 import 'package:otlob/Features/Screens/Cart/widgets/card.dart';
 import 'package:otlob/Features/Screens/Cart/widgets/summary.dart';
@@ -54,6 +56,17 @@ class CartScreen extends StatelessWidget {
             SliverToBoxAdapter(child: SizedBox(height: 50)),
             const SliverToBoxAdapter(
               child: OrderSummary(subtotal: 640, deliveryFee: 25),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 50)),
+            SliverToBoxAdapter(
+              child: SubmitButton(
+                onTap: () {},
+                title: "Proceed to Checkout · 665 EGP",
+              ),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 40)),
+            SliverToBoxAdapter(
+              child: BottomNav(currentIndex: 2, onTap: (i) {}),
             ),
           ],
         ),

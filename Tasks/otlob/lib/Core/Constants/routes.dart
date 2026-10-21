@@ -10,6 +10,7 @@ import 'package:otlob/Features/Screens/Filter/screens/filterb.dart';
 import 'package:otlob/Features/Screens/Filter/screens/filterc.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Screens/home_screen.dart';
+import 'package:otlob/Features/Screens/Orders/screens/order.dart';
 
 class AppRouter {
   AppRouter._();
@@ -45,6 +46,9 @@ class AppRouter {
 
       case AppRoutes.cart:
         return MaterialPageRoute(builder: (_) => const CartScreen());
+
+      case AppRoutes.orders:
+        return MaterialPageRoute(builder: (_) => const OrderScreen());
 
       default:
         return MaterialPageRoute(

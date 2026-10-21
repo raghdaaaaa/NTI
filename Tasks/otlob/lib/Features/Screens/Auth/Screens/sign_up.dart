@@ -6,7 +6,7 @@ import 'package:otlob/Features/Screens/Auth/Widgets/footer.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/forms.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/header.dart';
 import 'package:otlob/Features/Screens/Auth/Widgets/log_option.dart';
-import 'package:otlob/Features/Screens/Auth/Widgets/submit_button.dart';
+import 'package:otlob/Core/shared/submit_button.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -37,7 +37,8 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               SubmitButton(
-                onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, AppRoutes.home),
                 title: "Sign Up",
               ),
               const SizedBox(height: 20),
