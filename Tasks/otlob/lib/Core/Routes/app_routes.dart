@@ -9,4 +9,5 @@ class AppRoutes {
   static const String explore = '/explore';
   static const String filter = '/filterc';
   static const String filterb = '/filterb';
+  static const String cart = '/cart';
 }

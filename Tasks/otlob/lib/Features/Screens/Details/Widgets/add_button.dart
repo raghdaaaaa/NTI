@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/Core/Constants/app_colors.dart';
+import 'package:otlob/Core/shared/counter.dart';
 
 class AddButton extends StatelessWidget {
   const AddButton({super.key});
@@ -24,50 +25,7 @@ class AddButton extends StatelessWidget {
         child: Row(
           children: [
             // Counter
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 246, 246, 246),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.remove,
-                      size: 18,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 14),
-                    child: Text(
-                      "1",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.add, size: 18, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
+            const Counter(quantity: 1),
             const SizedBox(width: 16),
             // Add
             Expanded(

@@ -70,6 +70,12 @@ class DebugScreen extends StatelessWidget {
               Navigator.pushNamed(context, AppRoutes.filterb);
             },
           ),
+          ListTile(
+            title: const Text('Cart'),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.cart);
+            },
+          ),
         ],
       ),
     );

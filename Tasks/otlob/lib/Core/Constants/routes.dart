@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:otlob/Core/Routes/app_routes.dart';
 import 'package:otlob/Features/Screens/Auth/Screens/log_in.dart';
 import 'package:otlob/Features/Screens/Auth/Screens/sign_up.dart';
+import 'package:otlob/Features/Screens/Cart/screens/cart.dart';
 import 'package:otlob/Features/Screens/Debug/debug_screen.dart';
 import 'package:otlob/Features/Screens/Details/Screens/details.dart';
 import 'package:otlob/Features/Screens/Explore/Screens/explore.dart';
@@ -41,6 +42,9 @@ class AppRouter {
 
       case AppRoutes.filterb:
         return MaterialPageRoute(builder: (_) => const FilterB());
+
+      case AppRoutes.cart:
+        return MaterialPageRoute(builder: (_) => const CartScreen());
 
       default:
         return MaterialPageRoute(
