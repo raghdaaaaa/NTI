@@ -14,4 +14,15 @@ class ProductModel {
     required this.price,
     required this.imagePath,
   });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      brand: json['brand']?.toString() ?? '',
+      category: json['category']?.toString() ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      imagePath: json['pictureUrl'] ?? '',
+    );
+  }
 }

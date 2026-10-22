@@ -1,11 +1,10 @@
 class BrandModel {
+  final int id;
   final String name;
-  const BrandModel({required this.name});
-}
 
-const brands = [
-  BrandModel(name: 'Starbucks'),
-  BrandModel(name: 'Costa'),
-  BrandModel(name: 'Cilantro'),
-  BrandModel(name: 'TBS'),
-];
+  const BrandModel({required this.id, required this.name});
+
+  factory BrandModel.fromJson(Map<String, dynamic> json) {
+    return BrandModel(id: json['id'] ?? 0, name: json['name'] ?? '');
+  }
+}

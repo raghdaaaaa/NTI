@@ -95,3 +95,28 @@ class _NavIcon extends StatelessWidget {
     );
   }
 }
+
+class MainShell extends StatefulWidget {
+  const MainShell({super.key, required this.pages, this.initialIndex = 0});
+
+  final List<Widget> pages;
+  final int initialIndex;
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  late int _index = widget.initialIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(index: _index, children: widget.pages),
+      bottomNavigationBar: BottomNav(
+        currentIndex: _index,
+        onTap: (i) => setState(() => _index = i),
+      ),
+    );
+  }
+}

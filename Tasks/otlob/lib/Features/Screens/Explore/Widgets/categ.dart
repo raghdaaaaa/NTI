@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/Core/Constants/app_colors.dart';
+import 'package:otlob/Features/Screens/Explore/services/api_service.dart';
 
 import '../models/categ.dart';
 
@@ -18,7 +20,15 @@ class Categ extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Row(
             children: [
-              Text(category.emoji, style: const TextStyle(fontSize: 25)),
+              category.imageUrl != null
+                  ? Image.network(
+                      category.imageUrl!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => _iconFallback(),
+                    )
+                  : _iconFallback(),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -37,10 +47,29 @@ class Categ extends StatelessWidget {
       ),
     );
   }
+
+  Widget _iconFallback() => Container(
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      color: AppColors.primaryLight,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: const Icon(Icons.category, color: AppColors.primary),
+  );
 }
 
-class Categories extends StatelessWidget {
+class Categories extends StatefulWidget {
   const Categories({super.key});
+
+  @override
+  State<Categories> createState() => _CategoriesState();
+}
+
+class _CategoriesState extends State<Categories> {
+  late Future<List<CategoryModel>> _future = ExploreService().getCategories();
+
+  void _retry() => setState(() => _future = ExploreService().getCategories());
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +89,45 @@ class Categories extends StatelessWidget {
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverGrid.builder(
-            itemCount: categories.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              mainAxisExtent: 84,
-            ),
-            itemBuilder: (context, i) => Categ(category: categories[i]),
-          ),
+        FutureBuilder<List<CategoryModel>>(
+          future: _future,
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              );
+            }
+
+            if (snap.hasError) {
+              debugPrint('Categories FutureBuilder error: ${snap.error}');
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: TextButton(
+                    onPressed: _retry,
+                    child: const Text('Something went wrong. Tap to retry'),
+                  ),
+                ),
+              );
+            }
+
+            final categories = snap.data ?? [];
+            return SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid.builder(
+                itemCount: categories.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  mainAxisExtent: 84,
+                ),
+                itemBuilder: (_, i) => Categ(category: categories[i]),
+              ),
+            );
+          },
         ),
       ],
     );

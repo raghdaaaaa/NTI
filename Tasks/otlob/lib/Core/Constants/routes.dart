@@ -11,6 +11,7 @@ import 'package:otlob/Features/Screens/Filter/screens/filterc.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Screens/home_screen.dart';
 import 'package:otlob/Features/Screens/Orders/screens/order.dart';
+import 'package:otlob/Core/shared/bottom_nav.dart';
 
 class AppRouter {
   AppRouter._();
@@ -20,14 +21,24 @@ class AppRouter {
       case AppRoutes.debug:
         return MaterialPageRoute(builder: (_) => const DebugScreen());
 
+      case AppRoutes.main:
+        return MaterialPageRoute(
+          builder: (_) => const MainShell(
+            pages: [
+              HomeScreen(),
+              Explore(),
+              CartScreen(),
+              OrderScreen(),
+              Center(child: Text('Profile')),
+            ],
+          ),
+        );
+
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LogInScreen());
 
       case AppRoutes.signUp:
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
-
-      case AppRoutes.home:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
 
       case AppRoutes.details:
         final product = settings.arguments as ProductModel;
@@ -35,20 +46,11 @@ class AppRouter {
           builder: (_) => DetailsScreen(product: product),
         );
 
-      case AppRoutes.explore:
-        return MaterialPageRoute(builder: (_) => const Explore());
-
       case AppRoutes.filter:
         return MaterialPageRoute(builder: (_) => const FilterC());
 
       case AppRoutes.filterb:
         return MaterialPageRoute(builder: (_) => const FilterB());
-
-      case AppRoutes.cart:
-        return MaterialPageRoute(builder: (_) => const CartScreen());
-
-      case AppRoutes.orders:
-        return MaterialPageRoute(builder: (_) => const OrderScreen());
 
       default:
         return MaterialPageRoute(

@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/Features/Screens/Explore/models/brands.dart';
+import 'package:otlob/Features/Screens/Explore/services/api_service.dart';
 
-class Brands extends StatelessWidget {
+class Brands extends StatefulWidget {
   const Brands({super.key});
+
+  @override
+  State<Brands> createState() => _BrandsState();
+}
+
+class _BrandsState extends State<Brands> {
+  late Future<List<BrandModel>> _future = ExploreService().getBrands();
+
+  void _retry() => setState(() => _future = ExploreService().getBrands());
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +32,40 @@ class Brands extends StatelessWidget {
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.all(10),
-          sliver: SliverList.separated(
-            itemCount: brands.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 11),
-            itemBuilder: (context, i) => BrandCard(brand: brands[i]),
-          ),
+        FutureBuilder<List<BrandModel>>(
+          future: _future,
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              );
+            }
+
+            if (snap.hasError) {
+              debugPrint('Brands FutureBuilder error: ${snap.error}');
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: TextButton(
+                    onPressed: _retry,
+                    child: const Text('Something went wrong. Tap to retry'),
+                  ),
+                ),
+              );
+            }
+
+            final brands = snap.data ?? [];
+            return SliverPadding(
+              padding: const EdgeInsets.all(10),
+              sliver: SliverList.separated(
+                itemCount: brands.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 11),
+                itemBuilder: (_, i) => BrandCard(brand: brands[i]),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -41,6 +78,8 @@ class BrandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final firstLetter = brand.name.isNotEmpty ? brand.name[0] : '?';
+
     return Material(
       color: Colors.white,
       shadowColor: Colors.grey.withValues(alpha: 0.2),
@@ -62,7 +101,7 @@ class BrandCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  brand.name[0],
+                  firstLetter,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
