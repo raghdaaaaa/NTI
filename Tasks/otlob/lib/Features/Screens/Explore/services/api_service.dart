@@ -54,16 +54,37 @@ class ExploreService {
       throw Exception('PARSE ERROR: $e');
     }
   }
-}
 
-Future<List<ProductModel>> getProducts() async {
-  try {
-    final res = await ApiClient.dio.get('/api/Products');
-    debugPrint('Products response: ${res.data}');
-    final data = res.data;
-    final list = data is List ? data : (data['data'] as List? ?? []);
-    return list.map((e) => ProductModel.fromJson(e)).toList();
-  } on DioException catch (e) {
-    throw Exception(e.message ?? 'Failed to load products');
+  Future<List<ProductModel>> getFilteredProducts({
+    int? categoryId,
+    int? brandId,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (categoryId != null) queryParams['categoryId'] = categoryId;
+      if (brandId != null) queryParams['brandId'] = brandId;
+      final res = await ApiClient.dio.get(
+        '/api/Products',
+        queryParameters: queryParams,
+      );
+      debugPrint('Filtered Products response: ${res.data}');
+      final data = res.data;
+      final list = data is List ? data : (data['data'] as List? ?? []);
+      return list.map((e) => ProductModel.fromJson(e)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.message ?? 'Failed to load products');
+    }
+  }
+
+  Future<List<ProductModel>> getProducts() async {
+    try {
+      final res = await ApiClient.dio.get('/api/Products');
+      debugPrint('Products response: ${res.data}');
+      final data = res.data;
+      final list = data is List ? data : (data['data'] as List? ?? []);
+      return list.map((e) => ProductModel.fromJson(e)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.message ?? 'Failed to load products');
+    }
   }
 }

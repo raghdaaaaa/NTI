@@ -15,7 +15,13 @@ class Categ extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/filter-products',
+            arguments: {'title': category.name, 'categoryId': category.id},
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(

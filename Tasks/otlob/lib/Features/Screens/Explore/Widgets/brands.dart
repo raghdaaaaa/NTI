@@ -87,7 +87,13 @@ class BrandCard extends StatelessWidget {
       elevation: 1,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/filter-products',
+            arguments: {'title': brand.name, 'brandId': brand.id},
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(

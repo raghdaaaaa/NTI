@@ -7,6 +7,7 @@ import 'package:otlob/Features/Screens/Debug/debug_screen.dart';
 import 'package:otlob/Features/Screens/Details/Screens/details.dart';
 import 'package:otlob/Features/Screens/Explore/Screens/explore.dart';
 import 'package:otlob/Features/Screens/Filter/screens/filterb.dart';
+import 'package:otlob/Features/Screens/Filter/screens/filter_products.dart';
 import 'package:otlob/Features/Screens/Filter/screens/filterc.dart';
 import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
 import 'package:otlob/Features/Screens/Home/Screens/home_screen.dart';
@@ -51,6 +52,16 @@ class AppRouter {
 
       case AppRoutes.filterb:
         return MaterialPageRoute(builder: (_) => const FilterB());
+
+      case AppRoutes.filterProducts:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => FilterProducts(
+            title: args?['title'] ?? '',
+            categoryId: args?['categoryId'],
+            brandId: args?['brandId'],
+          ),
+        );
 
       default:
         return MaterialPageRoute(
