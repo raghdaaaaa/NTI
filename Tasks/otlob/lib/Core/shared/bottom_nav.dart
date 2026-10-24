@@ -4,6 +4,8 @@ import 'package:flutter_svg/svg.dart';
 import '../Constants/app_icons.dart';
 import '../Constants/app_colors.dart';
 
+final ValueNotifier<int> tabIndex = ValueNotifier(0);
+
 class BottomNav extends StatelessWidget {
   const BottomNav({super.key, required this.currentIndex, required this.onTap});
 
@@ -110,12 +112,31 @@ class _MainShellState extends State<MainShell> {
   late int _index = widget.initialIndex;
 
   @override
+  void initState() {
+    super.initState();
+    tabIndex.value = widget.initialIndex;
+    tabIndex.addListener(_onTabIndexChanged);
+  }
+
+  @override
+  void dispose() {
+    tabIndex.removeListener(_onTabIndexChanged);
+    super.dispose();
+  }
+
+  void _onTabIndexChanged() {
+    if (tabIndex.value != _index) {
+      setState(() => _index = tabIndex.value);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _index, children: widget.pages),
       bottomNavigationBar: BottomNav(
         currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+        onTap: (i) => tabIndex.value = i,
       ),
     );
   }

@@ -55,7 +55,9 @@ class Categ extends StatelessWidget {
       color: AppColors.primaryLight,
       borderRadius: BorderRadius.circular(8),
     ),
-    child: const Icon(Icons.category, color: AppColors.primary),
+    child: Center(
+      child: Text(category.emoji, style: const TextStyle(fontSize: 28)),
+    ),
   );
 }
 

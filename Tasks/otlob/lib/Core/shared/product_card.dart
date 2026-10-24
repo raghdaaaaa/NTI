@@ -38,20 +38,31 @@ class _ProductCardState extends State<ProductCard> {
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18),
                   ),
-                  child: Image.asset(
-                    widget.product.imagePath,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    cacheWidth: 400,
-                    errorBuilder: (context, error, stack) => Container(
-                      color: AppColors.divider,
-                      child: const Icon(
-                        Icons.image,
-                        color: AppColors.textLight,
-                        size: 40,
-                      ),
-                    ),
-                  ),
+                  child: widget.product.imagePath.isEmpty
+                      ? Container(
+                          width: double.infinity,
+                          color: AppColors.divider,
+                          child: const Icon(
+                            Icons.image,
+                            color: AppColors.textLight,
+                            size: 40,
+                          ),
+                        )
+                      : Image.network(
+                          widget.product.imagePath,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          cacheWidth: 400,
+                          errorBuilder: (context, error, stack) => Container(
+                            width: double.infinity,
+                            color: AppColors.divider,
+                            child: const Icon(
+                              Icons.image,
+                              color: AppColors.textLight,
+                              size: 40,
+                            ),
+                          ),
+                        ),
                 ),
                 // Category tag
                 Positioned(

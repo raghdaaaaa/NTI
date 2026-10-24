@@ -22,7 +22,14 @@ class ProductModel {
       brand: json['brand']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0,
-      imagePath: json['pictureUrl'] ?? '',
+      imagePath: _resolveImageUrl(json['pictureUrl']),
     );
+  }
+
+  static String _resolveImageUrl(dynamic pictureUrl) {
+    if (pictureUrl == null) return '';
+    final url = pictureUrl.toString();
+    if (url.startsWith('http')) return url;
+    return 'https://talabat639.runasp.net/$url';
   }
 }

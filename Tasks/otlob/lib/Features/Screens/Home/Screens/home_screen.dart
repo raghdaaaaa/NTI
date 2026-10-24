@@ -10,6 +10,7 @@ import 'package:otlob/Core/shared/search_bar.dart';
 import 'package:otlob/Core/shared/product_card.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/promo_banner.dart';
 import 'package:otlob/Features/Screens/Home/Widgets/section_header.dart';
+import 'package:otlob/Core/shared/bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final results = await Future.wait([
         _service.getCategories(),
         _service.getBrands(),
-        getProducts(),
+        getProducts().catchError((_) => <ProductModel>[]),
       ]);
 
       if (!mounted) return;
@@ -85,28 +86,32 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 18, 20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HomeAppBar(),
-                  SizedBox(height: 18),
-                  HomeSearchBar(hint: 'Search for restaurants near you'),
-                  SizedBox(height: 20),
-                  PromoBanner(),
-                  SizedBox(height: 24),
-                  SectionHeader(title: 'Categories', actionText: 'See all'),
-                  SizedBox(height: 16),
-                  CategoriesSection(),
-                  SizedBox(height: 24),
-                  SectionHeader(title: 'Brands'),
-                  SizedBox(height: 12),
-                  BrandsSection(items: ['Starbucks', 'Costa', 'Cilantro']),
-                  SizedBox(height: 24),
-                  SectionHeader(title: 'Popular right now'),
-                  SizedBox(height: 16),
+                  const HomeAppBar(),
+                  const SizedBox(height: 18),
+                  const HomeSearchBar(hint: 'Search for restaurants near you'),
+                  const SizedBox(height: 20),
+                  const PromoBanner(),
+                  const SizedBox(height: 24),
+                  SectionHeader(
+                    title: 'Categories',
+                    actionText: 'See all',
+                    onAction: () => tabIndex.value = 1,
+                  ),
+                  const SizedBox(height: 16),
+                  CategoriesSection(categories: _categories),
+                  const SizedBox(height: 24),
+                  const SectionHeader(title: 'Brands'),
+                  const SizedBox(height: 12),
+                  BrandsSection(items: _brands.map((b) => b.name).toList()),
+                  const SizedBox(height: 24),
+                  const SectionHeader(title: 'Popular right now'),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

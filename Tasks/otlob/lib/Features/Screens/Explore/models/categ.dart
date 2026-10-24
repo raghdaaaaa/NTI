@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+const _categoryEmojis = {
+  'frappuccino': '🥤',
+  'latte': '☕',
+  'mocha': '🍫',
+  'macchiato': '☕',
+  'matcha': '🍵',
+  'cake': '🍰',
+  'donuts': '🍩',
+  'salad': '🥗',
+};
+
 class CategoryModel {
   final int id;
   final String name;
@@ -21,4 +32,7 @@ class CategoryModel {
       bgColor: bg,
     );
   }
+
+  String get emoji =>
+      _categoryEmojis[name.toLowerCase().trim()] ?? '🍽️';
 }

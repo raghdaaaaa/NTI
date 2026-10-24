@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/Core/Constants/app_colors.dart';
+import 'package:otlob/Features/Screens/Explore/models/categ.dart';
 
 class CategoryItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
+  final CategoryModel category;
   final bool isSelected;
 
   const CategoryItem({
     super.key,
-    required this.icon,
-    required this.label,
+    required this.category,
     this.isSelected = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    Color color = isSelected ? AppColors.primaryLight : AppColors.white;
+    Color color = isSelected ? AppColors.primaryLight : category.bgColor;
     return Column(
       children: [
         Container(
@@ -28,15 +27,32 @@ class CategoryItem extends StatelessWidget {
                 ? Border.all(color: AppColors.primary, width: 1.5)
                 : Border.all(color: AppColors.divider, width: 1),
           ),
-          child: Icon(
-            icon,
-            color: isSelected ? AppColors.primary : AppColors.textGrey,
-            size: 28,
-          ),
+          child: category.imageUrl != null && category.imageUrl!.isNotEmpty
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    category.imageUrl!,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Center(
+                      child: Text(
+                        category.emoji,
+                        style: const TextStyle(fontSize: 28),
+                      ),
+                    ),
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    category.emoji,
+                    style: const TextStyle(fontSize: 28),
+                  ),
+                ),
         ),
         const SizedBox(height: 6),
         Text(
-          label,
+          category.name,
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -49,14 +65,9 @@ class CategoryItem extends StatelessWidget {
 }
 
 class CategoriesSection extends StatelessWidget {
-  const CategoriesSection({super.key});
+  final List<CategoryModel> categories;
 
-  static const List<_CategoryItemData> _categories = [
-    _CategoryItemData(icon: Icons.local_cafe, label: 'Frappuccino'),
-    _CategoryItemData(icon: Icons.coffee, label: 'Latte'),
-    _CategoryItemData(icon: Icons.bakery_dining, label: 'Mocha'),
-    _CategoryItemData(icon: Icons.coffee_maker, label: 'Macchiato'),
-  ];
+  const CategoriesSection({super.key, required this.categories});
 
   @override
   Widget build(BuildContext context) {
@@ -64,14 +75,13 @@ class CategoriesSection extends StatelessWidget {
       height: 90,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _categories.length,
+        itemCount: categories.length,
         itemBuilder: (context, index) {
-          final item = _categories[index];
+          final category = categories[index];
           return Padding(
             padding: const EdgeInsets.only(right: 16),
             child: CategoryItem(
-              icon: item.icon,
-              label: item.label,
+              category: category,
               isSelected: index == 0,
             ),
           );
@@ -79,11 +89,4 @@ class CategoriesSection extends StatelessWidget {
       ),
     );
   }
-}
-
-class _CategoryItemData {
-  final IconData icon;
-  final String label;
-
-  const _CategoryItemData({required this.icon, required this.label});
 }
