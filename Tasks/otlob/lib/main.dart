@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:otlob/Core/Constants/routes.dart';
-import 'package:otlob/Core/Routes/app_routes.dart';
+import 'package:otlob/core/routes/app_routes.dart';
+import 'package:otlob/core/routes/routes.dart';
 
 void main() {
   runApp(const MyApp());

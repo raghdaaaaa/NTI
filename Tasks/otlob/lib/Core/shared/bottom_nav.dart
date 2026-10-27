@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../Constants/app_icons.dart';
-import '../Constants/app_colors.dart';
+import '../constants/app_icons.dart';
+import '../constants/app_colors.dart';
 
 final ValueNotifier<int> tabIndex = ValueNotifier(0);
 

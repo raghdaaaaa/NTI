@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:otlob/Core/Constants/app_colors.dart';
-import 'package:otlob/Features/Screens/Home/Models/product_model.dart';
+import 'package:otlob/core/constants/app_colors.dart';
+import 'package:otlob/features/home/data/models/product_model.dart';
 
 class ProductCard extends StatefulWidget {
   final ProductModel product;

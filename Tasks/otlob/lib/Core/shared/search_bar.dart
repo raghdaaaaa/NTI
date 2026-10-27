@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:otlob/Core/Constants/app_colors.dart';
+import 'package:otlob/core/constants/app_colors.dart';
 
 class HomeSearchBar extends StatelessWidget {
   final String hint;
