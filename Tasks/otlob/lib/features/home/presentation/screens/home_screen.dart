@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/core/constants/app_colors.dart';
+import 'package:otlob/core/shared/bottom_nav.dart';
+import 'package:otlob/core/shared/brands_section.dart';
+import 'package:otlob/core/shared/product_card.dart';
+import 'package:otlob/core/shared/search_bar.dart';
 import 'package:otlob/features/explore/data/models/brands.dart';
 import 'package:otlob/features/explore/data/models/categ.dart';
 import 'package:otlob/features/explore/data/services/api_service.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
-import 'package:otlob/core/shared/brands_section.dart';
+import 'package:otlob/features/home/data/services/home_service.dart';
 import 'package:otlob/features/home/presentation/widgets/categories_section.dart';
 import 'package:otlob/features/home/presentation/widgets/home_app_bar.dart';
-import 'package:otlob/core/shared/search_bar.dart';
-import 'package:otlob/core/shared/product_card.dart';
 import 'package:otlob/features/home/presentation/widgets/promo_banner.dart';
 import 'package:otlob/features/home/presentation/widgets/section_header.dart';
-import 'package:otlob/core/shared/bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _service = ExploreService();
+  final _exploreService = ExploreService();
+  final _homeService = HomeService();
 
   List<CategoryModel> _categories = [];
   List<BrandModel> _brands = [];
@@ -43,9 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final results = await Future.wait([
-        _service.getCategories(),
-        _service.getBrands(),
-        _service.getProducts().catchError((_) => <ProductModel>[]),
+        _exploreService.getCategories(),
+        _exploreService.getBrands(),
+        _homeService.getProducts().catchError((_) => <ProductModel>[]),
       ]);
 
       if (!mounted) return;
@@ -116,21 +119,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => ProductCard(product: _products[index]),
-                childCount: _products.length,
+          if (_products.isEmpty)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: Text(
+                    'No products available right now',
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                  ),
+                ),
               ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
-                childAspectRatio: 0.62,
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => ProductCard(product: _products[index]),
+                  childCount: _products.length,
+                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 14,
+                  childAspectRatio: 0.62,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
