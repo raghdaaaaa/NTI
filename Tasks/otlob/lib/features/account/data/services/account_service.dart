@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:otlob/core/network/api_error.dart';
 import 'package:otlob/core/network/api_client.dart';
 import 'package:otlob/features/account/data/models/address_dto.dart';
 import 'package:otlob/features/auth/data/models/user_dto.dart';
@@ -76,6 +77,12 @@ class AccountService {
             responseData['statusCode'] == 401) {
           throw const AccountException(
             'The API returned HTTP 404 with an error payload reporting 401. Sign in and retry the account request.',
+          );
+        }
+        if (status == 500) {
+          final detail = safeApiErrorDetail(responseData);
+          throw AccountException(
+            'Account request failed (HTTP 500): ${detail ?? 'The server reported an internal error.'} Check backend logs for the failing request.',
           );
         }
         throw AccountException(

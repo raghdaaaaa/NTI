@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:otlob/core/network/api_error.dart';
 import 'package:otlob/core/network/api_client.dart';
 import 'package:otlob/features/orders/data/models/delivery_method.dart';
 import 'package:otlob/features/orders/data/models/order.dart';
@@ -89,6 +90,12 @@ class OrderService {
             'The server rejected this order request as unauthorized. Sign in again and retry.',
           );
         }
+        if (status == 500) {
+          final detail = safeApiErrorDetail(responseData);
+          throw OrderException(
+            'Order request failed (HTTP 500): ${detail ?? 'The server reported an internal error.'} Check backend logs for the failing request.',
+          );
+        }
         throw OrderException(_messageForStatus(status));
       }
       if (error.type == DioExceptionType.connectionTimeout ||
@@ -120,10 +127,11 @@ class OrderService {
       case 404:
         return 'The order or requested order endpoint could not be found.';
       case 500:
+        return 'Order request failed (HTTP 500). Check backend logs for the failing request.';
       case 502:
       case 503:
       case 504:
-        return 'The order service is temporarily unavailable. Please try again.';
+        return 'Order service unavailable (HTTP $status). Please try again.';
       default:
         return 'Order request failed (HTTP $status). Please try again.';
     }

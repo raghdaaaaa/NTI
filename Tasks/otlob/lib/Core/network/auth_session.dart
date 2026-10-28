@@ -66,7 +66,18 @@ class AuthSession {
   static bool isValidToken(String? token, {DateTime? now}) {
     if (token == null || token.isEmpty) return false;
 
-    final segments = token.split('.');
+    final normalizedToken = token.trim();
+    final bareToken = normalizedToken.replaceFirst(
+      RegExp(r'^Bearer\s+', caseSensitive: false),
+      '',
+    );
+    if (bareToken.isEmpty ||
+        bareToken.toLowerCase() == 'bearer' ||
+        RegExp(r'\s').hasMatch(bareToken)) {
+      return false;
+    }
+
+    final segments = bareToken.split('.');
     if (segments.length != 3) return true;
 
     try {

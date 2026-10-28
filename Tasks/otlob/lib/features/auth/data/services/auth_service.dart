@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:otlob/core/network/api_client.dart';
+import 'package:otlob/core/network/api_error.dart';
 import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/features/auth/data/models/login_dto.dart';
 import 'package:otlob/features/auth/data/models/register_dto.dart';
@@ -113,52 +114,31 @@ class AuthService {
 
   String _handleDioError(DioException e) {
     final response = e.response;
-    if (response != null && response.data != null) {
-      final dynamic data = response.data;
-      if (data is Map) {
-        if (data['message'] != null && data['message'].toString().isNotEmpty) {
-          return data['message'].toString();
-        }
-        if (data['errors'] != null) {
-          final errors = data['errors'];
-          if (errors is Map) {
-            final messages = <String>[];
-            for (final value in errors.values) {
-              if (value is List) {
-                messages.addAll(value.map((v) => v.toString()));
-              } else if (value != null) {
-                messages.add(value.toString());
-              }
-            }
-            if (messages.isNotEmpty) {
-              return messages.join('\n');
-            }
-          } else if (errors is List && errors.isNotEmpty) {
-            return errors.join('\n');
-          }
-        }
-        if (data['title'] != null && data['title'].toString().isNotEmpty) {
-          return data['title'].toString();
-        }
-      } else if (data is String && data.trim().isNotEmpty) {
-        return data.trim();
-      }
-
-      switch (response.statusCode) {
+    final status = response?.statusCode;
+    final detail = safeApiErrorDetail(response?.data);
+    if (status != null) {
+      switch (status) {
         case 400:
-          return 'Bad request. Please verify your submitted information.';
+          return detail ??
+              'Bad request (HTTP 400). Please verify your submitted information.';
         case 401:
-          return 'Invalid credentials. Please check your email and password.';
+          return detail ??
+              'Invalid credentials (HTTP 401). Please check your email and password.';
         case 403:
-          return 'Access denied.';
+          return detail ?? 'Access denied (HTTP 403).';
         case 404:
-          return 'Authentication service not found.';
+          return detail ?? 'Authentication service not found (HTTP 404).';
         case 409:
-          return 'An account with this email already exists.';
+          return detail ??
+              'An account with this email already exists (HTTP 409).';
         case 500:
+          return 'Server error (HTTP 500): ${detail ?? 'The API returned an internal server error.'} Check backend logs for the failing request.';
         case 502:
         case 503:
-          return 'Server error. Please try again later.';
+        case 504:
+          return 'Server unavailable (HTTP $status): ${detail ?? 'Please try again later.'}';
+        default:
+          return 'Request failed (HTTP $status): ${detail ?? 'The server rejected the request.'}';
       }
     }
 

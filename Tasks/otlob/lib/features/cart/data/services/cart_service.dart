@@ -155,11 +155,11 @@ class CartService {
               ? 'The basket endpoint or requested resource could not be found.'
               : 'The basket endpoint or requested resource could not be found. $serverMessage';
         case 500:
+          return 'Basket request failed (HTTP 500): ${serverMessage ?? 'The server reported an internal error.'} Check backend logs for the failing request.';
         case 502:
         case 503:
         case 504:
-          return serverMessage ??
-              'The basket service is temporarily unavailable. Please try again.';
+          return 'Basket service unavailable (HTTP $statusCode): ${serverMessage ?? 'Please try again later.'}';
         default:
           return serverMessage ??
               'The basket request failed (HTTP $statusCode). Please try again.';
@@ -207,7 +207,7 @@ class CartService {
     if (sanitized.isEmpty ||
         sanitized.length > 240 ||
         RegExp(
-          r'(stack trace|exception:|dioexception| at [\w.]+\(|password|authorization:|bearer\s+\S+)',
+          r'(stack trace|exception:|dioexception| at [\w.]+\(|password|(?:access[_ -]?)?token|authorization:|bearer\s+\S+)',
           caseSensitive: false,
         ).hasMatch(sanitized)) {
       return null;

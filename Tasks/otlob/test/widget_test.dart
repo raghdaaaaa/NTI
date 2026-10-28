@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:otlob/core/network/api_client.dart';
 import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/core/routes/app_routes.dart';
+import 'package:otlob/features/auth/data/models/login_dto.dart';
 import 'package:otlob/features/auth/data/services/auth_service.dart';
 import 'package:otlob/features/auth/presentation/screens/log_in.dart';
 import 'package:otlob/features/cart/data/services/cart_service.dart';
@@ -112,6 +113,78 @@ void main() {
     expect(ApiClient.dio.options.headers.containsKey('Authorization'), isFalse);
   });
 
+  test(
+    'shared API client scopes authorization to protected API paths',
+    () async {
+      final session = AuthSession(storage: _MemoryTokenStorage());
+      await session.saveToken('test-token');
+      final adapter = _BasketAdapter();
+      ApiClient.dio.httpClientAdapter = adapter;
+
+      await CartService().getBasket();
+      await ApiClient.dio.get('/api/Products');
+      await ApiClient.dio.post(
+        '/api/Account/Login',
+        data: {'email': 'test@example.com', 'password': 'not-a-real-password'},
+      );
+      await ApiClient.dio.get('/api/Account/emailExisits');
+      await ApiClient.dio.get('/api/Account');
+      await ApiClient.dio.get('/api/Orders');
+      await ApiClient.dio.get('/api/Orders/DeliverMethods');
+
+      expect(adapter.authorizationByPath['/api/Basket'], startsWith('Bearer '));
+      expect(
+        adapter.authorizationByPath['/api/Account'],
+        startsWith('Bearer '),
+      );
+      expect(adapter.authorizationByPath['/api/Orders'], startsWith('Bearer '));
+      expect(
+        adapter.authorizationByPath['/api/Orders/DeliverMethods'],
+        startsWith('Bearer '),
+      );
+      expect(adapter.authorizationByPath['/api/Products'], isNull);
+      expect(adapter.authorizationByPath['/api/Account/Login'], isNull);
+      expect(adapter.authorizationByPath['/api/Account/emailExisits'], isNull);
+
+      ApiClient.setAccessToken('Bearer ');
+      await ApiClient.dio.get('/api/Basket');
+      expect(adapter.authorizationByPath['/api/Basket'], isNull);
+      await session.clear();
+    },
+  );
+
+  test('authentication errors preserve safe HTTP 500 details', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'https://talabat639.runasp.net'))
+      ..httpClientAdapter = _LoginAdapter(
+        statusCode: 500,
+        errorResponse: {
+          'message': 'Database temporarily unavailable; password=secret; token=private-token',
+        },
+      );
+
+    await expectLater(
+      AuthService(
+        dio: dio,
+        session: AuthSession(storage: _MemoryTokenStorage()),
+      ).login(
+        const LoginDto(email: 'test@example.com', password: 'not-a-secret'),
+      ),
+      throwsA(
+        isA<AuthException>().having(
+          (error) => error.message,
+          'message',
+          allOf(
+            contains('HTTP 500'),
+            contains('Database temporarily unavailable'),
+            isNot(contains('secret')),
+            isNot(contains('private-token')),
+          ),
+        ),
+      ),
+    );
+    dio.close();
+  });
+
   test('shared API client sends the saved bearer token to Basket', () async {
     final session = AuthSession(storage: _MemoryTokenStorage());
     await session.saveToken('test-token');
@@ -155,9 +228,10 @@ class _MemoryTokenStorage implements AccessTokenStorage {
 }
 
 class _LoginAdapter implements HttpClientAdapter {
-  _LoginAdapter({this.statusCode = 200});
+  _LoginAdapter({this.statusCode = 200, this.errorResponse});
 
   final int statusCode;
+  final Map<String, dynamic>? errorResponse;
 
   @override
   Future<ResponseBody> fetch(
@@ -171,7 +245,7 @@ class _LoginAdapter implements HttpClientAdapter {
             'email': 'ada@example.com',
             'token': 'test-token',
           }
-        : {'message': 'Invalid credentials'};
+        : errorResponse ?? {'message': 'Invalid credentials'};
     return ResponseBody.fromString(
       jsonEncode(response),
       statusCode,
@@ -187,6 +261,7 @@ class _LoginAdapter implements HttpClientAdapter {
 
 class _BasketAdapter implements HttpClientAdapter {
   String? authorization;
+  final authorizationByPath = <String, String?>{};
 
   @override
   Future<ResponseBody> fetch(
@@ -194,7 +269,11 @@ class _BasketAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async {
-    authorization = options.headers['Authorization'] as String?;
+    authorizationByPath[options.uri.path] =
+        options.headers['Authorization'] as String?;
+    if (options.uri.path == '/api/Basket') {
+      authorization = options.headers['Authorization'] as String?;
+    }
     return ResponseBody.fromString(
       jsonEncode({'id': 'basket', 'items': []}),
       200,
