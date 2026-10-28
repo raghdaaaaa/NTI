@@ -7,6 +7,7 @@ import 'package:otlob/features/cart/data/models/cart.dart';
 import 'package:otlob/features/cart/data/services/cart_service.dart';
 import 'package:otlob/features/cart/presentation/widgets/card.dart';
 import 'package:otlob/features/cart/presentation/widgets/summary.dart';
+import 'package:otlob/features/orders/data/models/order.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -199,7 +200,9 @@ class _CartScreenState extends State<CartScreen> {
                           context,
                           AppRoutes.checkout,
                         );
-                        if (!context.mounted || order == null) return;
+                        if (!context.mounted || order is! OrderModel) return;
+                        await _loadBasket();
+                        if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Order placed.')),
                         );

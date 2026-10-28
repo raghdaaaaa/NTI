@@ -4,7 +4,14 @@ import 'package:otlob/core/constants/app_colors.dart';
 class HomeSearchBar extends StatelessWidget {
   final String hint;
   final ValueChanged<String>? onSubmitted;
-  const HomeSearchBar({super.key, required this.hint, this.onSubmitted});
+  final VoidCallback? onFilterTap;
+
+  const HomeSearchBar({
+    super.key,
+    required this.hint,
+    this.onSubmitted,
+    this.onFilterTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,44 +47,36 @@ class HomeSearchBar extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 10),
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
+        if (onFilterTap != null) ...[
+          const SizedBox(width: 10),
+          Material(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const Icon(
-                Icons.filter_alt_outlined,
-                color: AppColors.textDark,
-                size: 24,
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
+            child: InkWell(
+              onTap: onFilterTap,
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.filter_alt_outlined,
+                  color: AppColors.textDark,
+                  size: 24,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

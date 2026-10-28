@@ -14,11 +14,16 @@ class ApiClient {
   );
 
   static void setAccessToken(String? token) {
-    if (token == null || token.isEmpty) {
+    final normalizedToken = token?.trim();
+    if (normalizedToken == null || normalizedToken.isEmpty) {
       dio.options.headers.remove('Authorization');
       return;
     }
 
-    dio.options.headers['Authorization'] = 'Bearer $token';
+    final authorizationValue =
+        normalizedToken.toLowerCase().startsWith('bearer ')
+        ? normalizedToken
+        : <String>['Bearer', normalizedToken].join(' ');
+    dio.options.headers.addAll({'Authorization': authorizationValue});
   }
 }

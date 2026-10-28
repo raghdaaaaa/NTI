@@ -78,7 +78,9 @@ void main() {
       await account.updateAddress(address);
       expect(await account.emailExists('ada@example.com'), isTrue);
       await basket.getBasket();
+      expect(CartService.basketUpdates.value?.items.single.id, 7);
       await basket.updateItemQuantity(productId: 7, quantity: 3);
+      await basket.addItem(productId: 7, quantity: 1);
       final products = await home.getProductsPagination(
         pageSize: 10,
         pageIndex: 2,
@@ -95,6 +97,7 @@ void main() {
         categoryId: 5,
         brandId: 4,
         search: 'cake',
+        sort: 'PriceAsc',
       );
       await orders.getOrders();
       await orders.getOrder(12);
@@ -116,6 +119,7 @@ void main() {
           'GET /api/Account/emailExisits',
           'GET /api/Basket',
           'POST /api/Basket',
+          'POST /api/Basket',
           'GET /api/Products',
           'GET /api/Products/7',
           'GET /api/Products/categories',
@@ -128,7 +132,7 @@ void main() {
         ],
       );
       expect(adapter.requests[5].queryParameters, {'email': 'ada@example.com'});
-      expect(adapter.requests[8].queryParameters, {
+      expect(adapter.requests[9].queryParameters, {
         'PageSize': 10,
         'PageIndex': 2,
         'Search': 'cake',
@@ -136,10 +140,11 @@ void main() {
         'brandId': 4,
         'categoryId': 5,
       });
-      expect(adapter.requests[12].queryParameters, {
+      expect(adapter.requests[13].queryParameters, {
         'categoryId': 5,
         'brandId': 4,
         'Search': 'cake',
+        'sort': 'PriceAsc',
       });
       expect(jsonDecode(adapter.requestBodies[0]), {
         'email': 'ada@example.com',
@@ -156,9 +161,13 @@ void main() {
         'productId': 7,
         'quantity': 3,
       });
-      expect(jsonDecode(adapter.requestBodies[16]), {
+      expect(jsonDecode(adapter.requestBodies[17]), {
         'deliverMethodID': 2,
         'shippingAddress': address.toJson(),
+      });
+      expect(jsonDecode(adapter.requestBodies[8]), {
+        'productId': 7,
+        'quantity': 4,
       });
       expect(
         adapter.requests.every(
@@ -172,7 +181,16 @@ void main() {
         ApiClient.dio.options.headers['Authorization'],
         'Bearer test-token',
       );
+      ApiClient.setAccessToken('Bearer test-token');
+      expect(
+        ApiClient.dio.options.headers['Authorization'],
+        'Bearer test-token',
+      );
       ApiClient.setAccessToken(null);
+      expect(
+        ApiClient.dio.options.headers.containsKey('Authorization'),
+        isFalse,
+      );
       dio.close();
     },
   );

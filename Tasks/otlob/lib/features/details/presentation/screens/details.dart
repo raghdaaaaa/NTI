@@ -66,10 +66,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     setState(() => _isAdding = true);
     try {
-      await _cartService.updateItemQuantity(
-        productId: productId,
-        quantity: _quantity,
-      );
+      await _cartService.addItem(productId: productId, quantity: _quantity);
       if (!mounted) return;
       _showMessage('Added to cart.');
     } on CartException catch (error) {

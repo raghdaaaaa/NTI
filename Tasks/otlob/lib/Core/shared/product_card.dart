@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/core/constants/app_colors.dart';
 import 'package:otlob/core/routes/app_routes.dart';
+import 'package:otlob/features/cart/data/services/cart_service.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
 
 class ProductCard extends StatefulWidget {
@@ -13,6 +14,9 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
+  final _cartService = CartService();
+  bool _isAdding = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -145,17 +149,32 @@ class _ProductCardState extends State<ProductCard> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                       width: 30,
                       height: 30,
-                      decoration: const BoxDecoration(
+                      child: Material(
                         color: AppColors.primary,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: AppColors.white,
-                        size: 18,
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: _isAdding ? null : _addToCart,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Center(
+                            child: _isAdding
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.white,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.add,
+                                    color: AppColors.white,
+                                    size: 18,
+                                  ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -174,5 +193,29 @@ class _ProductCardState extends State<ProductCard> {
       AppRoutes.details,
       arguments: widget.product,
     );
+  }
+
+  Future<void> _addToCart() async {
+    final productId = int.tryParse(widget.product.id);
+    if (productId == null || productId <= 0) {
+      _showMessage('This product has no valid ID and cannot be added.');
+      return;
+    }
+
+    setState(() => _isAdding = true);
+    try {
+      await _cartService.addItem(productId: productId, quantity: 1);
+      if (mounted) _showMessage('Added to cart.');
+    } on CartException catch (error) {
+      if (mounted) _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _isAdding = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 }

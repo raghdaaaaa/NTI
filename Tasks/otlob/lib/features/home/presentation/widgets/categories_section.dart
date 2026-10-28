@@ -66,8 +66,15 @@ class CategoryItem extends StatelessWidget {
 
 class CategoriesSection extends StatelessWidget {
   final List<CategoryModel> categories;
+  final int? selectedCategoryId;
+  final ValueChanged<CategoryModel>? onSelected;
 
-  const CategoriesSection({super.key, required this.categories});
+  const CategoriesSection({
+    super.key,
+    required this.categories,
+    this.selectedCategoryId,
+    this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +87,12 @@ class CategoriesSection extends StatelessWidget {
           final category = categories[index];
           return Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: CategoryItem(
-              category: category,
-              isSelected: index == 0,
+            child: GestureDetector(
+              onTap: onSelected == null ? null : () => onSelected!(category),
+              child: CategoryItem(
+                category: category,
+                isSelected: category.id == selectedCategoryId,
+              ),
             ),
           );
         },

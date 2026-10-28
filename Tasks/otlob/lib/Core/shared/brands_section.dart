@@ -33,8 +33,14 @@ class BrandChip extends StatelessWidget {
 class BrandsSection extends StatelessWidget {
   final List<String> items;
   final int selectedIndex;
+  final ValueChanged<int>? onSelected;
 
-  const BrandsSection({super.key, required this.items, this.selectedIndex = 0});
+  const BrandsSection({
+    super.key,
+    required this.items,
+    this.selectedIndex = 0,
+    this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +52,13 @@ class BrandsSection extends StatelessWidget {
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: BrandChip(name: items[index], isSelected: index == 0),
+            child: GestureDetector(
+              onTap: onSelected == null ? null : () => onSelected!(index),
+              child: BrandChip(
+                name: items[index],
+                isSelected: index == selectedIndex,
+              ),
+            ),
           );
         },
       ),

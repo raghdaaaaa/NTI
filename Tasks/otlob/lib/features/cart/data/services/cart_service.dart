@@ -31,7 +31,11 @@ class CartService {
       if (data is! Map) {
         throw const CartException('Basket response format is invalid.');
       }
-      return CustomerBasketModel.fromJson(Map<String, dynamic>.from(data));
+      final basket = CustomerBasketModel.fromJson(
+        Map<String, dynamic>.from(data),
+      );
+      basketUpdates.value = basket;
+      return basket;
     } on CartException {
       rethrow;
     } on DioException catch (error) {
@@ -47,6 +51,28 @@ class CartService {
     } on TypeError {
       throw const CartException('Basket response format is invalid.');
     }
+  }
+
+  Future<CustomerBasketModel> addItem({
+    required int productId,
+    required int quantity,
+  }) async {
+    if (productId <= 0 || quantity < 1) {
+      throw const CartException('A valid product and quantity are required.');
+    }
+
+    final basket = basketUpdates.value ?? await getBasket();
+    final currentQuantity = basket.items
+        .where((item) => item.id == productId)
+        .fold<int>(0, (total, item) => total + item.quantity);
+    if (quantity > 0x7fffffff - currentQuantity) {
+      throw const CartException('The requested basket quantity is too large.');
+    }
+
+    return updateItemQuantity(
+      productId: productId,
+      quantity: currentQuantity + quantity,
+    );
   }
 
   Future<CustomerBasketModel> updateItemQuantity({
@@ -123,7 +149,7 @@ class CartService {
         case 404:
           final responseData = error.response?.data;
           if (responseData is Map && responseData['statusCode'] == 401) {
-            return 'The basket request returned HTTP 404, but the API error payload reports 401 (Endpoint Not Found). Sign in and retry; if it persists, the documented basket route may not be enabled on this server.';
+            return 'The basket API rejected this request as unauthorized. Sign in again and retry.';
           }
           return serverMessage == null
               ? 'The basket endpoint or requested resource could not be found.'

@@ -24,35 +24,49 @@ class FilterProducts extends StatefulWidget {
 class _FilterProductsState extends State<FilterProducts> {
   late Future<List<ProductModel>> _future;
   String _search = '';
+  int _sortIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _future = ExploreService().getFilteredProducts(
+    _future = _loadProducts();
+  }
+
+  Future<List<ProductModel>> _loadProducts() async {
+    final sort = switch (_sortIndex) {
+      1 => 'PriceAsc',
+      2 => 'PriceDesc',
+      _ => null,
+    };
+    final products = await ExploreService().getFilteredProducts(
       categoryId: widget.categoryId,
       brandId: widget.brandId,
       search: _search,
+      sort: sort,
     );
+    if (_sortIndex == 3) {
+      products.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
+    }
+    return products;
   }
 
   void _searchProducts(String search) {
     setState(() {
       _search = search;
-      _future = ExploreService().getFilteredProducts(
-        categoryId: widget.categoryId,
-        brandId: widget.brandId,
-        search: _search,
-      );
+      _future = _loadProducts();
     });
   }
 
-  void _retry() => setState(
-    () => _future = ExploreService().getFilteredProducts(
-      categoryId: widget.categoryId,
-      brandId: widget.brandId,
-      search: _search,
-    ),
-  );
+  void _selectSort(int index) {
+    setState(() {
+      _sortIndex = index;
+      _future = _loadProducts();
+    });
+  }
+
+  void _retry() => setState(() => _future = _loadProducts());
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +93,8 @@ class _FilterProductsState extends State<FilterProducts> {
             sliver: SliverToBoxAdapter(
               child: BrandsSection(
                 items: const ['Relevance', 'Price ↑', 'Price ↓', 'A – Z'],
+                selectedIndex: _sortIndex,
+                onSelected: _selectSort,
               ),
             ),
           ),
@@ -105,6 +121,14 @@ class _FilterProductsState extends State<FilterProducts> {
                 );
               }
               final products = snap.data ?? [];
+              if (products.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Center(child: Text('No matching products.')),
+                  ),
+                );
+              }
               return SliverPadding(
                 padding: const EdgeInsets.all(20),
                 sliver: SliverGrid(

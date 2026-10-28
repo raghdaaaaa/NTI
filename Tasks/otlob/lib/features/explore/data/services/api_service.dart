@@ -60,11 +60,13 @@ class ExploreService {
     int? categoryId,
     int? brandId,
     String? search,
+    String? sort,
   }) async {
     try {
       final queryParams = <String, dynamic>{};
       if (categoryId != null) queryParams['categoryId'] = categoryId;
       if (brandId != null) queryParams['brandId'] = brandId;
+      if (sort != null && sort.isNotEmpty) queryParams['sort'] = sort;
       if (search != null && search.trim().isNotEmpty) {
         queryParams['Search'] = search.trim();
       }

@@ -86,12 +86,10 @@ class OrderService {
             responseData is Map &&
             responseData['statusCode'] == 401) {
           throw const OrderException(
-            'The API returned HTTP 404 with an error payload reporting 401. Sign in and retry the order request.',
+            'The server rejected this order request as unauthorized. Sign in again and retry.',
           );
         }
-        throw OrderException(
-          'Order request failed (HTTP $status). Please try again.',
-        );
+        throw OrderException(_messageForStatus(status));
       }
       if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -108,6 +106,26 @@ class OrderService {
       throw const OrderException(
         'Unable to complete the order request. Please try again.',
       );
+    }
+  }
+
+  String _messageForStatus(int status) {
+    switch (status) {
+      case 400:
+        return 'The order was rejected. Check the delivery method and shipping address.';
+      case 401:
+        return 'Please sign in to view or place orders.';
+      case 403:
+        return 'You do not have permission to access these orders.';
+      case 404:
+        return 'The order or requested order endpoint could not be found.';
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return 'The order service is temporarily unavailable. Please try again.';
+      default:
+        return 'Order request failed (HTTP $status). Please try again.';
     }
   }
 }
