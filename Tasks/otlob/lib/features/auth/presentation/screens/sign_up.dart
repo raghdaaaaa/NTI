@@ -13,7 +13,9 @@ import 'package:otlob/features/auth/presentation/widgets/header.dart';
 import 'package:otlob/features/auth/presentation/widgets/log_option.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -25,7 +27,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late final AuthService _authService;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
 
   @override
   void dispose() {
@@ -55,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         throw const AuthException('An account with this email already exists.');
       }
 
-      final user = await AuthService().register(
+      final user = await _authService.register(
         RegisterDto(
           displayName: nameController.text.trim(),
           email: emailController.text.trim(),

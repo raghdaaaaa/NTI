@@ -14,15 +14,40 @@ import 'package:otlob/features/cart/data/services/cart_service.dart';
 import 'package:otlob/main.dart';
 
 void main() {
-  testWidgets('starts on Login when no token is stored', (tester) async {
+  testWidgets('starts on Login without a stored token and opens Sign Up', (
+    tester,
+  ) async {
     final storage = _MemoryTokenStorage();
 
     await tester.pumpWidget(MyApp(session: AuthSession(storage: storage)));
     await tester.pumpAndSettle();
 
+    expect(find.byType(LogInScreen), findsOneWidget);
     expect(find.text('Enter your email'), findsOneWidget);
     expect(find.text('Sign Up'), findsOneWidget);
     expect(storage.token, isNull);
+    expect(ApiClient.hasAccessToken, isFalse);
+
+    for (final route in [
+      AppRoutes.main,
+      AppRoutes.explore,
+      AppRoutes.cart,
+      AppRoutes.orders,
+      AppRoutes.checkout,
+    ]) {
+      Navigator.of(tester.element(find.byType(LogInScreen)))
+          .pushReplacementNamed(route);
+      await tester.pumpAndSettle();
+      expect(find.byType(LogInScreen), findsOneWidget);
+      expect(ApiClient.hasAccessToken, isFalse);
+    }
+
+    await tester.ensureVisible(find.text('Sign Up'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sign Up'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Create an account'), findsOneWidget);
   });
 
   testWidgets('successful login stores the token and opens Home', (

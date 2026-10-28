@@ -11,6 +11,8 @@ class ApiClient {
 
   static final Dio dio = _createDio();
 
+  static bool get hasAccessToken => _accessToken != null;
+
   static Dio _createDio() {
     final client = Dio(
       BaseOptions(
