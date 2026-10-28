@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/core/constants/app_colors.dart';
+import 'package:otlob/core/routes/app_routes.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
 
 class ProductCard extends StatefulWidget {
@@ -26,7 +27,7 @@ class _ProductCardState extends State<ProductCard> {
           ),
         ],
       ),
-      child: Column(
+      child: GestureDetector(onTap: _openDetails, child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image section
@@ -163,7 +164,15 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
         ],
-      ),
+      )),
+    );
+  }
+
+  void _openDetails() {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.details,
+      arguments: widget.product,
     );
   }
 }

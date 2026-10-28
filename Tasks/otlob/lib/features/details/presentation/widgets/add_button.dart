@@ -3,7 +3,9 @@ import 'package:otlob/core/constants/app_colors.dart';
 import 'package:otlob/core/shared/counter.dart';
 
 class AddButton extends StatelessWidget {
-  const AddButton({super.key});
+  const AddButton({super.key, required this.price});
+
+  final double price;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +43,10 @@ class AddButton extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {},
-                  child: const FittedBox(
+                  child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      "Add to cart · 180 EGP",
+                      'Add to cart · ${price.toStringAsFixed(0)} EGP',
                       maxLines: 1,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

@@ -28,14 +28,14 @@ class ProductModel {
     return ProductModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      brand: json['brand']?.toString() ?? '',
-      category: json['category']?.toString() ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0,
+      brand: _stringValue(json['brand']),
+      category: _stringValue(json['category']),
+      price: _toDouble(json['price']),
       imagePath: _resolveImageUrl(pic),
       description: json['description']?.toString(),
       pictureUrl: pic,
-      brandId: json['brandId'] as int?,
-      categoryId: json['categoryId'] as int?,
+      brandId: _toInt(json['brandId']),
+      categoryId: _toInt(json['categoryId']),
     );
   }
 
@@ -56,8 +56,26 @@ class ProductModel {
 
   static String _resolveImageUrl(dynamic pictureUrl) {
     if (pictureUrl == null) return '';
-    final url = pictureUrl.toString();
+    final url = pictureUrl.toString().trim();
+    if (url.isEmpty) return '';
     if (url.startsWith('http')) return url;
-    return 'https://talabat639.runasp.net/$url';
+    final path = url.startsWith('/') ? url.substring(1) : url;
+    return 'https://talabat639.runasp.net/$path';
+  }
+
+  static String _stringValue(dynamic value) {
+    if (value is Map) return value['name']?.toString() ?? '';
+    return value?.toString() ?? '';
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static int? _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
   }
 }

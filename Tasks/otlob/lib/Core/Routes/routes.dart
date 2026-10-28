@@ -42,9 +42,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
 
       case AppRoutes.details:
-        final product = settings.arguments as ProductModel;
+        final product = settings.arguments;
         return MaterialPageRoute(
-          builder: (_) => DetailsScreen(product: product),
+          builder: (_) =>
+              DetailsScreen(product: product is ProductModel ? product : null),
         );
 
       case AppRoutes.filter:

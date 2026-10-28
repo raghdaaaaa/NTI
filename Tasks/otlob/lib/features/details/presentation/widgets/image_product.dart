@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/core/constants/app_assets.dart';
 
 class ImageProduct extends StatelessWidget {
   const ImageProduct({super.key, required this.imagePath});
@@ -12,7 +13,14 @@ class ImageProduct extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(45)),
-          child: Image.asset(imagePath, fit: BoxFit.cover),
+          child: imagePath.startsWith('http')
+              ? Image.network(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) =>
+                      Image.asset(AppAssets.donuts, fit: BoxFit.cover),
+                )
+              : Image.asset(imagePath, fit: BoxFit.cover),
         ),
         Positioned(
           top: 30,

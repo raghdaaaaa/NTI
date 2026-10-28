@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:otlob/core/constants/app_colors.dart';
+import 'package:otlob/features/cart/data/models/cart.dart';
 
 class OrderSummary extends StatelessWidget {
   const OrderSummary({
@@ -9,8 +10,8 @@ class OrderSummary extends StatelessWidget {
     required this.deliveryFee,
   });
 
-  final int subtotal;
-  final int deliveryFee;
+  final double subtotal;
+  final double deliveryFee;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +37,15 @@ class OrderSummary extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 25),
-          _Row('Subtotal', '$subtotal EGP'),
+          _Row('Subtotal', '${formatBasketAmount(subtotal)} EGP'),
           const SizedBox(height: 20),
-          _Row('Delivery fee', '$deliveryFee EGP'),
+          _Row('Delivery fee', '${formatBasketAmount(deliveryFee)} EGP'),
           const Divider(height: 50, thickness: 0.2),
-          _Row('Total', '${subtotal + deliveryFee} EGP', isTotal: true),
+          _Row(
+            'Total',
+            '${formatBasketAmount(subtotal + deliveryFee)} EGP',
+            isTotal: true,
+          ),
           const SizedBox(height: 10),
         ],
       ),

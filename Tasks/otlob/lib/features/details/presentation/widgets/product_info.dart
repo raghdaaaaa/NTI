@@ -16,20 +16,22 @@ class ProductInfo extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: const [
-              _TagChip(label: 'Cilantro', bg: true),
-              _TagChip(label: 'Donuts'),
+            children: [
+              if (product.brand.isNotEmpty)
+                _TagChip(label: product.brand, bg: true),
+              if (product.category.isNotEmpty)
+                _TagChip(label: product.category),
             ],
           ),
           const SizedBox(height: 20),
           Text(
-            "Glazed Donuts",
+            product.name,
             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text.rich(
             TextSpan(
-              text: '${"180"} ',
+              text: '${product.price.toStringAsFixed(0)} ',
               style: const TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
@@ -54,11 +56,15 @@ class ProductInfo extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Classic ring donuts hand-dipped in a signature sugar glaze '
-            'while still warm from the fryer. Light, pillowy and '
-            'irresistibly sweet.',
-            style: TextStyle(fontSize: 14, height: 1.5, color: Colors.grey),
+          Text(
+            product.description?.trim().isNotEmpty == true
+                ? product.description!.trim()
+                : 'No description available.',
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Colors.grey,
+            ),
           ),
         ],
       ),

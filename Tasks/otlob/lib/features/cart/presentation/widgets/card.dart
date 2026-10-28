@@ -12,8 +12,8 @@ class CartItemCard extends StatelessWidget {
   });
 
   final CartItemModel item;
-  final VoidCallback onAdd;
-  final VoidCallback onRemove;
+  final VoidCallback? onAdd;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +35,21 @@ class CartItemCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: item.image != null
-                ? Image.asset(
-                    item.image!,
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.cover,
-                  )
+                ? item.image!.startsWith('http')
+                      ? Image.network(
+                          item.image!,
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _imageFallback(),
+                        )
+                      : Image.asset(
+                          item.image!,
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _imageFallback(),
+                        )
                 : Container(
                     width: 90,
                     height: 90,
@@ -80,7 +89,7 @@ class CartItemCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${item.price * item.quantity} EGP',
+                      '${formatBasketAmount(item.price * item.quantity)} EGP',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
@@ -101,4 +110,19 @@ class CartItemCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _imageFallback() => Container(
+    width: 90,
+    height: 90,
+    color: const Color(0xFFF3F4F6),
+    alignment: Alignment.center,
+    padding: const EdgeInsets.all(10),
+    child: Text(
+      item.name,
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(fontSize: 13),
+    ),
+  );
 }
