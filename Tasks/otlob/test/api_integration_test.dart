@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otlob/core/network/api_client.dart';
+import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/features/account/data/models/address_dto.dart';
 import 'package:otlob/features/account/data/services/account_service.dart';
 import 'package:otlob/features/auth/data/models/login_dto.dart';
@@ -43,7 +44,10 @@ void main() {
         ),
       )..httpClientAdapter = adapter;
 
-      final auth = AuthService(dio: dio);
+      final auth = AuthService(
+        dio: dio,
+        session: AuthSession(storage: _MemoryTokenStorage()),
+      );
       final account = AccountService(dio: dio);
       final basket = CartService(dio: dio);
       final explore = ExploreService(dio: dio);
@@ -194,6 +198,23 @@ void main() {
       dio.close();
     },
   );
+}
+
+class _MemoryTokenStorage implements AccessTokenStorage {
+  String? token;
+
+  @override
+  Future<String?> readToken() async => token;
+
+  @override
+  Future<void> writeToken(String token) async {
+    this.token = token;
+  }
+
+  @override
+  Future<void> deleteToken() async {
+    token = null;
+  }
 }
 
 class _ApiAdapter implements HttpClientAdapter {

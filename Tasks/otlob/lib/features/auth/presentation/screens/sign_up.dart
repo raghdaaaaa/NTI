@@ -66,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (!mounted) return;
 
-      if (user.token != null && user.token!.isNotEmpty) {
+      if (user.token?.trim().isNotEmpty == true) {
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

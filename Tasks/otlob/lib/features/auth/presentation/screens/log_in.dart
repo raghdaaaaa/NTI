@@ -13,7 +13,9 @@ import 'package:otlob/features/auth/presentation/widgets/log_option.dart';
 import 'package:otlob/features/auth/presentation/widgets/remember.dart';
 
 class LogInScreen extends StatefulWidget {
-  const LogInScreen({super.key});
+  const LogInScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   State<LogInScreen> createState() => _LogInScreenState();
@@ -23,7 +25,14 @@ class _LogInScreenState extends State<LogInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late final AuthService _authService;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
 
   @override
   void dispose() {
@@ -39,7 +48,7 @@ class _LogInScreenState extends State<LogInScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await AuthService().login(
+      final user = await _authService.login(
         LoginDto(
           email: emailController.text.trim(),
           password: passwordController.text,
@@ -53,7 +62,9 @@ class _LogInScreenState extends State<LogInScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Login succeeded, but no session token was received.'),
+            content: Text(
+              'Login succeeded, but no session token was received.',
+            ),
             backgroundColor: Color(0xFFFF5C39),
           ),
         );
@@ -61,10 +72,7 @@ class _LogInScreenState extends State<LogInScreen> {
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          backgroundColor: Colors.redAccent,
-        ),
+        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
       );
     } catch (_) {
       if (!mounted) return;
@@ -119,23 +127,23 @@ class _LogInScreenState extends State<LogInScreen> {
                   isLoading: _isLoading,
                   title: "Login",
                 ),
-              const SizedBox(height: 20),
-              const Driver(),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  LogOption(imagePath: AppAssets.github, text: "GitHub"),
-                  const SizedBox(width: 16),
-                  LogOption(imagePath: AppAssets.gitlab, text: "GitLab"),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Footer(
-                text: "Don't have an account?",
-                actionText: "Sign Up",
-                onTap: () => Navigator.pushNamed(context, AppRoutes.signUp),
-              ),
-            ],
+                const SizedBox(height: 20),
+                const Driver(),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    LogOption(imagePath: AppAssets.github, text: "GitHub"),
+                    const SizedBox(width: 16),
+                    LogOption(imagePath: AppAssets.gitlab, text: "GitLab"),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Footer(
+                  text: "Don't have an account?",
+                  actionText: "Sign Up",
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.signUp),
+                ),
+              ],
             ),
           ),
         ),

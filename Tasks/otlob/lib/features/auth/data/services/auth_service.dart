@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:otlob/core/network/api_client.dart';
+import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/features/auth/data/models/login_dto.dart';
 import 'package:otlob/features/auth/data/models/register_dto.dart';
 import 'package:otlob/features/auth/data/models/user_dto.dart';
@@ -14,8 +15,11 @@ class AuthException implements Exception {
 
 class AuthService {
   final Dio _dio;
+  final AuthSession _session;
 
-  AuthService({Dio? dio}) : _dio = dio ?? ApiClient.dio;
+  AuthService({Dio? dio, AuthSession? session})
+    : _dio = dio ?? ApiClient.dio,
+      _session = session ?? AuthSession.instance;
 
   Future<UserDto> login(LoginDto loginDto) async {
     try {
@@ -25,7 +29,13 @@ class AuthService {
       );
 
       final user = _parseUserDto(response.data);
-      ApiClient.setAccessToken(user.token);
+      final token = user.token?.trim();
+      if (token == null || token.isEmpty) {
+        throw const AuthException(
+          'The server did not return an authentication token. Please try again.',
+        );
+      }
+      await _saveToken(token);
       return user;
     } on AuthException {
       rethrow;
@@ -48,7 +58,12 @@ class AuthService {
       );
 
       final user = _parseUserDto(response.data);
-      ApiClient.setAccessToken(user.token);
+      final token = user.token?.trim();
+      if (token == null || token.isEmpty) {
+        await _clearSession();
+      } else {
+        await _saveToken(token);
+      }
       return user;
     } on AuthException {
       rethrow;
@@ -61,6 +76,28 @@ class AuthService {
     } on TypeError {
       throw const AuthException(
         'An unexpected error occurred during registration.',
+      );
+    }
+  }
+
+  Future<void> _saveToken(String token) async {
+    try {
+      await _session.saveToken(token);
+    } on FormatException catch (error) {
+      throw AuthException(error.message);
+    } catch (_) {
+      throw const AuthException(
+        'Unable to securely save your session. Please try again.',
+      );
+    }
+  }
+
+  Future<void> _clearSession() async {
+    try {
+      await _session.clear();
+    } catch (_) {
+      throw const AuthException(
+        'Unable to clear the previous session. Please try again.',
       );
     }
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/features/account/presentation/screens/account_screen.dart';
 import 'package:otlob/core/routes/app_routes.dart';
+import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/features/auth/presentation/screens/log_in.dart';
 import 'package:otlob/features/auth/presentation/screens/sign_up.dart';
+import 'package:otlob/features/auth/presentation/screens/startup_screen.dart';
 import 'package:otlob/features/cart/presentation/screens/cart.dart';
 import 'package:otlob/features/debug/presentation/screens/debug_screen.dart';
 import 'package:otlob/features/details/presentation/screens/details.dart';
@@ -19,8 +21,17 @@ import 'package:otlob/core/shared/bottom_nav.dart';
 class AppRouter {
   AppRouter._();
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateRoute(
+    RouteSettings settings, {
+    AuthSession? session,
+  }) {
     switch (settings.name) {
+      case AppRoutes.startup:
+        return MaterialPageRoute(
+          builder: (_) =>
+              StartupScreen(session: session ?? AuthSession.instance),
+        );
+
       case AppRoutes.debug:
         return MaterialPageRoute(builder: (_) => const DebugScreen());
 
