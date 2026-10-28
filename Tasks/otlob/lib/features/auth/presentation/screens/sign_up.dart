@@ -3,6 +3,7 @@ import 'package:otlob/core/constants/app_assets.dart';
 import 'package:otlob/core/routes/app_routes.dart';
 import 'package:otlob/core/shared/submit_button.dart';
 import 'package:otlob/core/shared/validators.dart';
+import 'package:otlob/features/account/data/services/account_service.dart';
 import 'package:otlob/features/auth/data/models/register_dto.dart';
 import 'package:otlob/features/auth/data/services/auth_service.dart';
 import 'package:otlob/features/auth/presentation/widgets/driver.dart';
@@ -42,6 +43,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final bool emailExists;
+      try {
+        emailExists = await AccountService().emailExists(
+          emailController.text.trim(),
+        );
+      } on AccountException catch (error) {
+        throw AuthException(error.message);
+      }
+      if (emailExists) {
+        throw const AuthException('An account with this email already exists.');
+      }
+
       final user = await AuthService().register(
         RegisterDto(
           displayName: nameController.text.trim(),
@@ -67,10 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          backgroundColor: Colors.redAccent,
-        ),
+        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
       );
     } catch (_) {
       if (!mounted) return;

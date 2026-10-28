@@ -7,7 +7,12 @@ import 'package:otlob/features/filter/presentation/widgets/back_header.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
 
 class FilterProducts extends StatefulWidget {
-  const FilterProducts({super.key, required this.title, this.categoryId, this.brandId});
+  const FilterProducts({
+    super.key,
+    required this.title,
+    this.categoryId,
+    this.brandId,
+  });
   final String title;
   final int? categoryId;
   final int? brandId;
@@ -18,6 +23,7 @@ class FilterProducts extends StatefulWidget {
 
 class _FilterProductsState extends State<FilterProducts> {
   late Future<List<ProductModel>> _future;
+  String _search = '';
 
   @override
   void initState() {
@@ -25,13 +31,28 @@ class _FilterProductsState extends State<FilterProducts> {
     _future = ExploreService().getFilteredProducts(
       categoryId: widget.categoryId,
       brandId: widget.brandId,
+      search: _search,
     );
   }
 
-  void _retry() => setState(() => _future = ExploreService().getFilteredProducts(
-    categoryId: widget.categoryId,
-    brandId: widget.brandId,
-  ));
+  void _searchProducts(String search) {
+    setState(() {
+      _search = search;
+      _future = ExploreService().getFilteredProducts(
+        categoryId: widget.categoryId,
+        brandId: widget.brandId,
+        search: _search,
+      );
+    });
+  }
+
+  void _retry() => setState(
+    () => _future = ExploreService().getFilteredProducts(
+      categoryId: widget.categoryId,
+      brandId: widget.brandId,
+      search: _search,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +67,10 @@ class _FilterProductsState extends State<FilterProducts> {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverToBoxAdapter(
-              child: HomeSearchBar(hint: 'Search Products...'),
+              child: HomeSearchBar(
+                hint: 'Search Products...',
+                onSubmitted: _searchProducts,
+              ),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 20)),

@@ -18,59 +18,60 @@ const _bgColors = [
 ];
 
 class ExploreService {
+  ExploreService({Dio? dio}) : _dio = dio ?? ApiClient.dio;
+
+  final Dio _dio;
+
   Future<List<CategoryModel>> getCategories() async {
     try {
-      final res = await ApiClient.dio.get('/api/Products/categories');
+      final res = await _dio.get('/api/Products/categories');
       debugPrint('Categories response: ${res.data}');
-      final list = res.data is List
-          ? res.data
-          : (res.data['data'] as List? ?? []);
+      final list = _asList(res.data);
       return [
         for (var i = 0; i < list.length; i++)
-          CategoryModel.fromJson(list[i], _bgColors[i % _bgColors.length]),
+          CategoryModel.fromJson(
+            _asMap(list[i]),
+            _bgColors[i % _bgColors.length],
+          ),
       ];
     } on DioException catch (e) {
       throw Exception(
         '${e.type} | status=${e.response?.statusCode} | ${e.message}',
       );
-    } catch (e) {
-      throw Exception('PARSE ERROR: $e');
     }
   }
 
   Future<List<BrandModel>> getBrands() async {
     try {
-      final res = await ApiClient.dio.get('/api/Products/brands');
+      final res = await _dio.get('/api/Products/brands');
       debugPrint('Brands response: ${res.data}');
-      final list = res.data is List
-          ? res.data
-          : (res.data['data'] as List? ?? []);
-      return list.map<BrandModel>((e) => BrandModel.fromJson(e)).toList();
+      final list = _asList(res.data);
+      return list
+          .map<BrandModel>((e) => BrandModel.fromJson(_asMap(e)))
+          .toList();
     } on DioException catch (e) {
       throw Exception(
         '${e.type} | status=${e.response?.statusCode} | ${e.message}',
       );
-    } catch (e) {
-      throw Exception('PARSE ERROR: $e');
     }
   }
 
   Future<List<ProductModel>> getFilteredProducts({
     int? categoryId,
     int? brandId,
+    String? search,
   }) async {
     try {
       final queryParams = <String, dynamic>{};
       if (categoryId != null) queryParams['categoryId'] = categoryId;
       if (brandId != null) queryParams['brandId'] = brandId;
-      final res = await ApiClient.dio.get(
-        '/api/Products',
-        queryParameters: queryParams,
-      );
+      if (search != null && search.trim().isNotEmpty) {
+        queryParams['Search'] = search.trim();
+      }
+      final res = await _dio.get('/api/Products', queryParameters: queryParams);
       debugPrint('Filtered Products response: ${res.data}');
-      final data = res.data;
-      final list = data is List ? data : (data['data'] as List? ?? []);
-      return list.map((e) => ProductModel.fromJson(e)).toList();
+      final list = _productList(res.data);
+      return list.map((e) => ProductModel.fromJson(_asMap(e))).toList();
     } on DioException catch (e) {
       throw Exception(e.message ?? 'Failed to load products');
     }
@@ -78,13 +79,37 @@ class ExploreService {
 
   Future<List<ProductModel>> getProducts() async {
     try {
-      final res = await ApiClient.dio.get('/api/Products');
+      final res = await _dio.get('/api/Products');
       debugPrint('Products response: ${res.data}');
-      final data = res.data;
-      final list = data is List ? data : (data['data'] as List? ?? []);
-      return list.map((e) => ProductModel.fromJson(e)).toList();
+      final list = _productList(res.data);
+      return list.map((e) => ProductModel.fromJson(_asMap(e))).toList();
     } on DioException catch (e) {
       throw Exception(e.message ?? 'Failed to load products');
     }
+  }
+
+  List<dynamic> _asList(dynamic response) {
+    if (response is List) return response;
+    if (response is Map && response['data'] is List) {
+      return response['data'] as List;
+    }
+    throw const FormatException('API list response format is invalid.');
+  }
+
+  List<dynamic> _productList(dynamic response) {
+    final list = _asList(response);
+    if (list.isNotEmpty &&
+        list.first is Map &&
+        (list.first as Map).containsKey('page_Index')) {
+      final pageData = (list.first as Map)['data'];
+      if (pageData is List) return pageData;
+      throw const FormatException('Products page data is invalid.');
+    }
+    return list;
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map) return Map<String, dynamic>.from(value);
+    throw const FormatException('API item response format is invalid.');
   }
 }

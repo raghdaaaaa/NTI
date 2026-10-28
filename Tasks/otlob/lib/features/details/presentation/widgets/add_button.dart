@@ -3,9 +3,22 @@ import 'package:otlob/core/constants/app_colors.dart';
 import 'package:otlob/core/shared/counter.dart';
 
 class AddButton extends StatelessWidget {
-  const AddButton({super.key, required this.price});
+  const AddButton({
+    super.key,
+    required this.price,
+    required this.quantity,
+    required this.onAdd,
+    required this.onIncrease,
+    required this.onDecrease,
+    required this.isAdding,
+  });
 
   final double price;
+  final int quantity;
+  final VoidCallback onAdd;
+  final VoidCallback? onIncrease;
+  final VoidCallback? onDecrease;
+  final bool isAdding;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +40,11 @@ class AddButton extends StatelessWidget {
         child: Row(
           children: [
             // Counter
-            const Counter(quantity: 1),
+            Counter(
+              quantity: quantity,
+              onAdd: onIncrease,
+              onRemove: onDecrease,
+            ),
             const SizedBox(width: 16),
             // Add
             Expanded(
@@ -42,11 +59,13 @@ class AddButton extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: isAdding ? null : onAdd,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      'Add to cart · ${price.toStringAsFixed(0)} EGP',
+                      isAdding
+                          ? 'Adding...'
+                          : 'Add to cart · ${price.toStringAsFixed(0)} EGP',
                       maxLines: 1,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

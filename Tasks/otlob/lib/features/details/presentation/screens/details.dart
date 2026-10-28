@@ -5,6 +5,7 @@ import 'package:otlob/features/details/presentation/widgets/product_info.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
 import 'package:otlob/features/details/presentation/widgets/image_product.dart';
 import 'package:otlob/features/details/data/services/product_details_service.dart';
+import 'package:otlob/features/cart/data/services/cart_service.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({super.key, required this.product});
@@ -16,8 +17,11 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final _service = ProductDetailsService();
+  final _cartService = CartService();
   late ProductModel? _product = widget.product;
   bool _isLoading = false;
+  bool _isAdding = false;
+  int _quantity = 1;
   String? _error;
 
   @override
@@ -41,15 +45,55 @@ class _DetailsScreenState extends State<DetailsScreen> {
       if (!mounted) return;
       setState(() {
         _product = details;
-        _isLoading = false;
       });
     } on ProductDetailsException catch (error) {
       if (!mounted) return;
       setState(() {
         _error = error.message;
-        _isLoading = false;
       });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _addToCart() async {
+    final product = _product;
+    final productId = int.tryParse(product?.id ?? '');
+    if (productId == null || productId <= 0) {
+      _showMessage('This product has no valid ID and cannot be added.');
+      return;
+    }
+
+    setState(() => _isAdding = true);
+    try {
+      await _cartService.updateItemQuantity(
+        productId: productId,
+        quantity: _quantity,
+      );
+      if (!mounted) return;
+      _showMessage('Added to cart.');
+    } on CartException catch (error) {
+      if (!mounted) return;
+      _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _isAdding = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _increaseQuantity() {
+    if (_isAdding) return;
+    setState(() => _quantity++);
+  }
+
+  void _decreaseQuantity() {
+    if (_isAdding || _quantity <= 1) return;
+    setState(() => _quantity--);
   }
 
   @override
@@ -100,7 +144,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: AddButton(price: product.price),
+      bottomNavigationBar: AddButton(
+        price: product.price,
+        quantity: _quantity,
+        onAdd: _addToCart,
+        onIncrease: _isAdding ? null : _increaseQuantity,
+        onDecrease: _isAdding || _quantity <= 1 ? null : _decreaseQuantity,
+        isAdding: _isAdding,
+      ),
     );
   }
 }

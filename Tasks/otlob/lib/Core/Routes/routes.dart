@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/features/account/presentation/screens/account_screen.dart';
 import 'package:otlob/core/routes/app_routes.dart';
 import 'package:otlob/features/auth/presentation/screens/log_in.dart';
 import 'package:otlob/features/auth/presentation/screens/sign_up.dart';
@@ -12,6 +13,7 @@ import 'package:otlob/features/filter/presentation/screens/filterc.dart';
 import 'package:otlob/features/home/data/models/product_model.dart';
 import 'package:otlob/features/home/presentation/screens/home_screen.dart';
 import 'package:otlob/features/orders/presentation/screens/order.dart';
+import 'package:otlob/features/orders/presentation/screens/checkout.dart';
 import 'package:otlob/core/shared/bottom_nav.dart';
 
 class AppRouter {
@@ -30,7 +32,7 @@ class AppRouter {
               Explore(),
               CartScreen(),
               OrderScreen(),
-              Center(child: Text('Profile')),
+              AccountScreen(),
             ],
           ),
         );
@@ -40,6 +42,9 @@ class AppRouter {
 
       case AppRoutes.signUp:
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
+
+      case AppRoutes.checkout:
+        return MaterialPageRoute(builder: (_) => const CheckoutScreen());
 
       case AppRoutes.details:
         final product = settings.arguments;

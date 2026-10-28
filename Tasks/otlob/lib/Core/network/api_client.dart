@@ -12,4 +12,13 @@ class ApiClient {
       contentType: 'application/json',
     ),
   );
+
+  static void setAccessToken(String? token) {
+    if (token == null || token.isEmpty) {
+      dio.options.headers.remove('Authorization');
+      return;
+    }
+
+    dio.options.headers['Authorization'] = 'Bearer $token';
+  }
 }

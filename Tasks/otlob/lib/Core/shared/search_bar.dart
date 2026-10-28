@@ -3,7 +3,8 @@ import 'package:otlob/core/constants/app_colors.dart';
 
 class HomeSearchBar extends StatelessWidget {
   final String hint;
-  const HomeSearchBar({super.key, required this.hint});
+  final ValueChanged<String>? onSubmitted;
+  const HomeSearchBar({super.key, required this.hint, this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class HomeSearchBar extends StatelessWidget {
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 14),
               ),
+              onSubmitted: onSubmitted,
             ),
           ),
         ),

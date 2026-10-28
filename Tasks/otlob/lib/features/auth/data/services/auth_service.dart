@@ -24,11 +24,18 @@ class AuthService {
         data: loginDto.toJson(),
       );
 
-      return _parseUserDto(response.data);
+      final user = _parseUserDto(response.data);
+      ApiClient.setAccessToken(user.token);
+      return user;
+    } on AuthException {
+      rethrow;
     } on DioException catch (e) {
       throw AuthException(_handleDioError(e));
-    } catch (e) {
-      if (e is AuthException) rethrow;
+    } on FormatException {
+      throw const AuthException(
+        'Invalid response format received from server.',
+      );
+    } on TypeError {
       throw const AuthException('An unexpected error occurred during login.');
     }
   }
@@ -40,11 +47,18 @@ class AuthService {
         data: registerDto.toJson(),
       );
 
-      return _parseUserDto(response.data);
+      final user = _parseUserDto(response.data);
+      ApiClient.setAccessToken(user.token);
+      return user;
+    } on AuthException {
+      rethrow;
     } on DioException catch (e) {
       throw AuthException(_handleDioError(e));
-    } catch (e) {
-      if (e is AuthException) rethrow;
+    } on FormatException {
+      throw const AuthException(
+        'Invalid response format received from server.',
+      );
+    } on TypeError {
       throw const AuthException(
         'An unexpected error occurred during registration.',
       );

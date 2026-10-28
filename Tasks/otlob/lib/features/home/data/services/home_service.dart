@@ -36,6 +36,13 @@ class HomeService {
       } else if (data is Map) {
         return ProductsPagination.fromJson(Map<String, dynamic>.from(data));
       } else if (data is List) {
+        if (data.isNotEmpty &&
+            data.first is Map &&
+            (data.first as Map).containsKey('page_Index')) {
+          return ProductsPagination.fromJson(
+            Map<String, dynamic>.from(data.first as Map),
+          );
+        }
         final products = data
             .whereType<Map>()
             .map((e) => ProductModel.fromJson(Map<String, dynamic>.from(e)))
@@ -47,12 +54,7 @@ class HomeService {
           data: products,
         );
       }
-      return const ProductsPagination(
-        pageIndex: 1,
-        pageSize: 0,
-        count: 0,
-        data: [],
-      );
+      throw const FormatException('Products response format is invalid.');
     } on DioException catch (e) {
       throw Exception(e.message ?? 'Failed to load products');
     }

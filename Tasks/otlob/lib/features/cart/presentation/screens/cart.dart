@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:otlob/core/routes/app_routes.dart';
+import 'package:otlob/core/shared/bottom_nav.dart';
 import 'package:otlob/core/shared/cart_header.dart';
 import 'package:otlob/core/shared/submit_button.dart';
 import 'package:otlob/features/cart/data/models/cart.dart';
@@ -14,8 +16,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  static const double _deliveryFee = 25;
-
   final _cartService = CartService();
   CustomerBasketModel _basket = const CustomerBasketModel(items: []);
   bool _isLoading = true;
@@ -25,7 +25,25 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
+    CartService.basketUpdates.addListener(_onBasketUpdated);
     _loadBasket();
+  }
+
+  @override
+  void dispose() {
+    CartService.basketUpdates.removeListener(_onBasketUpdated);
+    super.dispose();
+  }
+
+  void _onBasketUpdated() {
+    final basket = CartService.basketUpdates.value;
+    if (!mounted || basket == null) return;
+    setState(() {
+      _basket = basket;
+      _error = null;
+      _isLoading = false;
+      _isUpdating = false;
+    });
   }
 
   Future<void> _loadBasket() async {
@@ -39,14 +57,14 @@ class _CartScreenState extends State<CartScreen> {
       if (!mounted) return;
       setState(() {
         _basket = basket;
-        _isLoading = false;
       });
     } on CartException catch (error) {
       if (!mounted) return;
       setState(() {
         _error = error.message;
-        _isLoading = false;
       });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -69,14 +87,14 @@ class _CartScreenState extends State<CartScreen> {
       if (!mounted) return;
       setState(() {
         _basket = basket;
-        _isUpdating = false;
       });
     } on CartException catch (error) {
       if (!mounted) return;
       setState(() {
         _error = error.message;
-        _isUpdating = false;
       });
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
     }
   }
 
@@ -91,7 +109,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final hasItems = _basket.items.isNotEmpty;
-    final total = _subtotal + _deliveryFee;
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -170,16 +187,25 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 50)),
             SliverToBoxAdapter(
-              child: OrderSummary(
-                subtotal: _subtotal,
-                deliveryFee: _deliveryFee,
-              ),
+              child: OrderSummary(subtotal: _subtotal, deliveryFee: null),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 50)),
             SliverToBoxAdapter(
               child: SubmitButton(
-                onTap: () {},
-                title: 'Proceed to Checkout · ${formatBasketAmount(total)} EGP',
+                onTap: _isUpdating
+                    ? null
+                    : () async {
+                        final order = await Navigator.pushNamed(
+                          context,
+                          AppRoutes.checkout,
+                        );
+                        if (!context.mounted || order == null) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Order placed.')),
+                        );
+                        tabIndex.value = 3;
+                      },
+                title: 'Proceed to Checkout',
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 40)),

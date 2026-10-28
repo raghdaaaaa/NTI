@@ -28,11 +28,17 @@ class CategoryModel {
     return CategoryModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      imageUrl: null,
+      imageUrl: _resolveImageUrl(json['pictureUrl']?.toString()),
       bgColor: bg,
     );
   }
 
-  String get emoji =>
-      _categoryEmojis[name.toLowerCase().trim()] ?? '🍽️';
+  static String? _resolveImageUrl(String? pictureUrl) {
+    if (pictureUrl == null || pictureUrl.trim().isEmpty) return null;
+    return Uri.parse('https://talabat639.runasp.net')
+        .resolve(pictureUrl)
+        .toString();
+  }
+
+  String get emoji => _categoryEmojis[name.toLowerCase().trim()] ?? '🍽️';
 }

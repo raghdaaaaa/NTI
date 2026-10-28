@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final results = await Future.wait([
         _exploreService.getCategories(),
         _exploreService.getBrands(),
-        _homeService.getProducts().catchError((_) => <ProductModel>[]),
+        _homeService.getProducts(),
       ]);
 
       if (!mounted) return;

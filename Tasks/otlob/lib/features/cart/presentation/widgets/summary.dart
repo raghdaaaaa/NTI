@@ -11,7 +11,7 @@ class OrderSummary extends StatelessWidget {
   });
 
   final double subtotal;
-  final double deliveryFee;
+  final double? deliveryFee;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +39,16 @@ class OrderSummary extends StatelessWidget {
           const SizedBox(height: 25),
           _Row('Subtotal', '${formatBasketAmount(subtotal)} EGP'),
           const SizedBox(height: 20),
-          _Row('Delivery fee', '${formatBasketAmount(deliveryFee)} EGP'),
+          _Row(
+            'Delivery fee',
+            deliveryFee == null
+                ? 'Selected at checkout'
+                : '${formatBasketAmount(deliveryFee!)} EGP',
+          ),
           const Divider(height: 50, thickness: 0.2),
           _Row(
-            'Total',
-            '${formatBasketAmount(subtotal + deliveryFee)} EGP',
+            deliveryFee == null ? 'Subtotal' : 'Total',
+            '${formatBasketAmount(subtotal + (deliveryFee ?? 0))} EGP',
             isTotal: true,
           ),
           const SizedBox(height: 10),

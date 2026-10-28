@@ -45,10 +45,19 @@ class ProductDetailsService {
           'Unable to load product details. Please try again.',
         );
       }
+      if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.sendTimeout ||
+          error.type == DioExceptionType.receiveTimeout) {
+        throw const ProductDetailsException(
+          'The request timed out. Check your connection and try again.',
+        );
+      }
       throw const ProductDetailsException(
         'Unable to connect. Check your connection and try again.',
       );
     } on FormatException {
+      throw const ProductDetailsException('Product details are unavailable.');
+    } on TypeError {
       throw const ProductDetailsException('Product details are unavailable.');
     }
   }
