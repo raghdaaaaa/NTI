@@ -61,7 +61,7 @@ class CartService {
       throw const CartException('A valid product and quantity are required.');
     }
 
-    final basket = basketUpdates.value ?? await getBasket();
+    final basket = await getBasket();
     final currentQuantity = basket.items
         .where((item) => item.id == productId)
         .fold<int>(0, (total, item) => total + item.quantity);
@@ -73,6 +73,61 @@ class CartService {
       productId: productId,
       quantity: currentQuantity + quantity,
     );
+  }
+
+  Future<CustomerBasketModel> removeItem(int productId) async {
+    if (productId <= 0) {
+      throw const CartException('A valid product ID is required.');
+    }
+
+    final basket = await getBasket();
+    final remainingItems = basket.items
+        .where((item) => item.id != productId)
+        .toList();
+    if (remainingItems.length == basket.items.length) return basket;
+
+    try {
+      await _dio.delete('/api/Basket');
+      basketUpdates.value = const CustomerBasketModel(items: []);
+
+      for (final item in remainingItems) {
+        final remainingProductId = item.id;
+        if (remainingProductId == null || remainingProductId <= 0) {
+          throw const CartException(
+            'The basket was cleared, but a remaining product has an invalid ID and could not be restored.',
+          );
+        }
+        await updateItemQuantity(
+          productId: remainingProductId,
+          quantity: item.quantity,
+        );
+      }
+
+      return basketUpdates.value ?? await getBasket();
+    } on CartException catch (error) {
+      await _refreshAfterRemovalFailure(error);
+      rethrow;
+    } on DioException catch (error) {
+      final serverMessage = _serverMessage(error.response?.data);
+      _logRequest(
+        error.requestOptions,
+        statusCode: error.response?.statusCode,
+        errorMessage: serverMessage,
+      );
+      final failure = CartException(_messageFor(error, serverMessage));
+      await _refreshAfterRemovalFailure(failure);
+      throw failure;
+    }
+  }
+
+  Future<void> _refreshAfterRemovalFailure(CartException failure) async {
+    try {
+      await getBasket();
+    } on CartException catch (refreshError) {
+      throw CartException(
+        '${failure.message} The current basket could not be reloaded: ${refreshError.message}',
+      );
+    }
   }
 
   Future<CustomerBasketModel> updateItemQuantity({

@@ -18,6 +18,56 @@ import 'package:otlob/features/orders/data/models/order_request.dart';
 import 'package:otlob/features/orders/data/services/order_service.dart';
 
 void main() {
+  test(
+    'gets, updates, adds, and removes basket items from API responses',
+    () async {
+      final adapter = _BasketWorkflowAdapter();
+      final dio = Dio(BaseOptions(baseUrl: 'https://talabat639.runasp.net'))
+        ..httpClientAdapter = adapter;
+      final service = CartService(dio: dio);
+
+      var basket = await service.getBasket();
+      expect(basket.items.map((item) => item.id), [7, 8]);
+
+      basket = await service.updateItemQuantity(productId: 7, quantity: 2);
+      expect(basket.items.first.quantity, 2);
+
+      basket = await service.addItem(productId: 7, quantity: 1);
+      expect(basket.items.first.quantity, 3);
+
+      await expectLater(
+        service.updateItemQuantity(productId: 7, quantity: 0),
+        throwsA(isA<CartException>()),
+      );
+
+      basket = await service.removeItem(8);
+      expect(basket.items, hasLength(1));
+      expect(basket.items.single.id, 7);
+      expect(basket.items.single.quantity, 3);
+
+      expect(
+        adapter.requests
+            .map((request) => '${request.method} ${request.uri.path}')
+            .toList(),
+        [
+          'GET /api/Basket',
+          'POST /api/Basket',
+          'GET /api/Basket',
+          'POST /api/Basket',
+          'GET /api/Basket',
+          'DELETE /api/Basket',
+          'POST /api/Basket',
+        ],
+      );
+      expect(adapter.postBodies, [
+        {'productId': 7, 'quantity': 2},
+        {'productId': 7, 'quantity': 3},
+        {'productId': 7, 'quantity': 3},
+      ]);
+      dio.close();
+    },
+  );
+
   test('parses the Swagger array-wrapped product pagination schema', () async {
     final adapter = _ApiAdapter(productsAsPageList: true);
     final dio = Dio(BaseOptions(baseUrl: 'https://talabat639.runasp.net'))
@@ -103,12 +153,14 @@ void main() {
         search: 'cake',
         sort: 'PriceAsc',
       );
-      await orders.getOrders();
-      await orders.getOrder(12);
+      expect((await orders.getOrders()).single.id, 12);
+      expect((await orders.getOrder(12)).items.single.productId, 7);
       await orders.getDeliveryMethods();
-      await orders.createOrder(
+      final createdOrder = await orders.createOrder(
         const OrderRequest(deliverMethodId: 2, shippingAddress: address),
       );
+      expect(createdOrder.id, 12);
+      expect((await orders.getOrders()).single.total, 30.5);
 
       expect(
         adapter.requests
@@ -123,6 +175,7 @@ void main() {
           'GET /api/Account/emailExisits',
           'GET /api/Basket',
           'POST /api/Basket',
+          'GET /api/Basket',
           'POST /api/Basket',
           'GET /api/Products',
           'GET /api/Products/7',
@@ -133,10 +186,11 @@ void main() {
           'GET /api/Orders/12',
           'GET /api/Orders/DeliverMethods',
           'POST /api/Orders',
+          'GET /api/Orders',
         ],
       );
       expect(adapter.requests[5].queryParameters, {'email': 'ada@example.com'});
-      expect(adapter.requests[9].queryParameters, {
+      expect(adapter.requests[10].queryParameters, {
         'PageSize': 10,
         'PageIndex': 2,
         'Search': 'cake',
@@ -144,7 +198,7 @@ void main() {
         'brandId': 4,
         'categoryId': 5,
       });
-      expect(adapter.requests[13].queryParameters, {
+      expect(adapter.requests[14].queryParameters, {
         'categoryId': 5,
         'brandId': 4,
         'Search': 'cake',
@@ -165,14 +219,16 @@ void main() {
         'productId': 7,
         'quantity': 3,
       });
-      expect(jsonDecode(adapter.requestBodies[17]), {
+      expect(jsonDecode(adapter.requestBodies[18]), {
         'deliverMethodID': 2,
         'shippingAddress': address.toJson(),
       });
-      expect(jsonDecode(adapter.requestBodies[8]), {
+      expect(jsonDecode(adapter.requestBodies[9]), {
         'productId': 7,
         'quantity': 4,
       });
+      expect(CartService.basketUpdates.value?.items.single.id, 7);
+      expect(CartService.basketUpdates.value?.items.single.quantity, 4);
       expect(
         adapter.requests.every(
           (request) => request.uri.origin == 'https://talabat639.runasp.net',
@@ -271,11 +327,28 @@ class _ApiAdapter implements HttpClientAdapter {
       };
     }
     if (request.path == '/api/Basket') {
+      if (request.method == 'POST') {
+        final body = jsonDecode(requestBodies.last) as Map<String, dynamic>;
+        return {
+          'id': 'basket',
+          'items': [
+            {
+              'id': body['productId'],
+              'productName': 'Cookie',
+              'price': 4.0,
+              'pictureUrl': null,
+              'category': 'Dessert',
+              'brand': 'Bakery',
+              'quantity': body['quantity'],
+            },
+          ],
+        };
+      }
       return {
         'id': 'basket',
         'items': [
           {
-            'id': 7,
+            'productId': 7,
             'productName': 'Cake',
             'price': 8.5,
             'pictureUrl': null,
@@ -367,6 +440,84 @@ class _ApiAdapter implements HttpClientAdapter {
     'total': 30.5,
     'paymentIntentId': null,
   };
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _BasketWorkflowAdapter implements HttpClientAdapter {
+  final requests = <RequestOptions>[];
+  final postBodies = <Map<String, dynamic>>[];
+  final _items = <Map<String, dynamic>>[
+    {
+      'id': 7,
+      'productName': 'Cake',
+      'brand': 'Bakery',
+      'category': 'Dessert',
+      'price': 8.5,
+      'quantity': 3,
+      'pictureUrl': null,
+    },
+    {
+      'id': 8,
+      'productName': 'Cookie',
+      'brand': 'Bakery',
+      'category': 'Dessert',
+      'price': 4.0,
+      'quantity': 2,
+      'pictureUrl': null,
+    },
+  ];
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    requests.add(options);
+    dynamic response;
+
+    if (options.method == 'POST') {
+      final bytes = await requestStream!.fold<List<int>>(
+        [],
+        (buffer, chunk) => buffer..addAll(chunk),
+      );
+      final body = Map<String, dynamic>.from(
+        jsonDecode(utf8.decode(bytes)) as Map,
+      );
+      postBodies.add(body);
+      final item = _items.firstWhere(
+        (entry) => entry['id'] == body['productId'],
+        orElse: () => {
+          'id': body['productId'],
+          'productName': 'New product',
+          'brand': '',
+          'category': '',
+          'price': 0,
+          'pictureUrl': null,
+        },
+      );
+      item['quantity'] = body['quantity'];
+      if (!_items.contains(item)) _items.add(item);
+      response = _basket;
+    } else if (options.method == 'DELETE') {
+      _items.clear();
+      response = null;
+    } else {
+      response = _basket;
+    }
+
+    return ResponseBody.fromString(
+      jsonEncode(response),
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  Map<String, dynamic> get _basket => {'id': 'basket', 'items': _items};
 
   @override
   void close({bool force = false}) {}

@@ -20,7 +20,7 @@ class CartItemModel {
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     final picture = json['pictureUrl']?.toString().trim();
     return CartItemModel(
-      id: _toInt(json['id']),
+      id: _toInt(json['productId']) ?? _toInt(json['id']),
       name: json['productName']?.toString() ?? '',
       brand: json['brand']?.toString() ?? '',
       category: json['category']?.toString() ?? '',

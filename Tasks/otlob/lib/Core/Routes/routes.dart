@@ -27,39 +27,43 @@ class AppRouter {
     RouteSettings settings, {
     AuthSession? session,
   }) {
+    final activeSession = session ?? AuthSession.instance;
+    if (_requiresAuthentication(settings.name) && !ApiClient.hasAccessToken) {
+      return _loginRoute(activeSession);
+    }
+
     switch (settings.name) {
       case AppRoutes.startup:
         return MaterialPageRoute(
-          builder: (_) =>
-              StartupScreen(session: session ?? AuthSession.instance),
+          builder: (_) => StartupScreen(session: activeSession),
         );
 
       case AppRoutes.debug:
         return MaterialPageRoute(builder: (_) => const DebugScreen());
 
       case AppRoutes.main:
-        return _mainRoute(session: session);
+        return _mainRoute(session: activeSession);
 
       case AppRoutes.explore:
-        return _mainRoute(session: session, initialIndex: 1);
+        return _mainRoute(session: activeSession, initialIndex: 1);
 
       case AppRoutes.cart:
-        return _mainRoute(session: session, initialIndex: 2);
+        return _mainRoute(session: activeSession, initialIndex: 2);
 
       case AppRoutes.orders:
-        return _mainRoute(session: session, initialIndex: 3);
+        return _mainRoute(session: activeSession, initialIndex: 3);
 
       case AppRoutes.login:
         return MaterialPageRoute(
           builder: (_) => LogInScreen(
-            authService: AuthService(session: session ?? AuthSession.instance),
+            authService: AuthService(session: activeSession),
           ),
         );
 
       case AppRoutes.signUp:
         return MaterialPageRoute(
           builder: (_) => SignUpScreen(
-            authService: AuthService(session: session ?? AuthSession.instance),
+            authService: AuthService(session: activeSession),
           ),
         );
 
@@ -130,4 +134,16 @@ class AppRouter {
       ),
     );
   }
+
+  static bool _requiresAuthentication(String? routeName) =>
+      routeName == AppRoutes.main ||
+      routeName == AppRoutes.explore ||
+      routeName == AppRoutes.cart ||
+      routeName == AppRoutes.orders ||
+      routeName == AppRoutes.checkout ||
+      routeName == AppRoutes.details ||
+      routeName == AppRoutes.filter ||
+      routeName == AppRoutes.filterb ||
+      routeName == AppRoutes.filterProducts ||
+      routeName == AppRoutes.debug;
 }

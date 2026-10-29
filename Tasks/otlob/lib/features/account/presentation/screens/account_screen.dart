@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:otlob/core/constants/app_colors.dart';
+import 'package:otlob/core/network/auth_session.dart';
 import 'package:otlob/core/routes/app_routes.dart';
 import 'package:otlob/features/account/data/models/address_dto.dart';
 import 'package:otlob/features/account/data/services/account_service.dart';
 import 'package:otlob/features/auth/data/models/user_dto.dart';
+import 'package:otlob/features/cart/data/services/cart_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -205,6 +207,31 @@ class _AccountScreenState extends State<AccountScreen> {
                               ? Colors.green
                               : Colors.redAccent,
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await AuthSession.instance.clear();
+                          CartService.basketUpdates.value = null;
+                          if (!context.mounted) return;
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.login,
+                            (_) => false,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text('Logout'),
                       ),
                     ),
                 ],

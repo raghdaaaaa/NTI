@@ -32,6 +32,13 @@ class _HomeAppBarState extends State<HomeAppBar> {
     setState(() => _account = _loadAccount());
   }
 
+  String _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning ';
+    if (hour < 17) return 'Good afternoon ';
+    return 'Good evening ';
+  }
+
   Future<(UserDto?, AddressDto?)> _loadAccount() async {
     UserDto? user;
     AddressDto? address;
@@ -72,8 +79,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'Good evening ',
+                        Text(
+                          _greeting(),
                           style: TextStyle(
                             fontSize: 13,
                             color: AppColors.textGrey,

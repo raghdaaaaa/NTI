@@ -43,7 +43,6 @@ class _CartScreenState extends State<CartScreen> {
       _basket = basket;
       _error = null;
       _isLoading = false;
-      _isUpdating = false;
     });
   }
 
@@ -69,6 +68,24 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+  Future<void> _refreshAfterMutationFailure(String message) async {
+    try {
+      final basket = await _cartService.getBasket();
+      if (!mounted) return;
+      setState(() {
+        _basket = basket;
+        _error = message;
+      });
+    } on CartException catch (refreshError) {
+      if (!mounted) return;
+      setState(() {
+        _error =
+            '$message The current basket could not be reloaded: '
+            '${refreshError.message}';
+      });
+    }
+  }
+
   Future<void> _updateQuantity(CartItemModel item, int quantity) async {
     final productId = item.id;
     if (_isUpdating || productId == null || productId <= 0 || quantity < 1) {
@@ -91,9 +108,53 @@ class _CartScreenState extends State<CartScreen> {
       });
     } on CartException catch (error) {
       if (!mounted) return;
-      setState(() {
-        _error = error.message;
-      });
+      await _refreshAfterMutationFailure(error.message);
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  Future<void> _removeItem(CartItemModel item) async {
+    final productId = item.id;
+    if (_isUpdating || productId == null || productId <= 0) return;
+
+    final shouldRemove = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove item?'),
+        content: const Text(
+          'The basket API only supports clearing the entire basket. '
+          'The app will rebuild the basket with the other items.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (shouldRemove != true || !mounted) return;
+
+    setState(() {
+      _isUpdating = true;
+      _error = null;
+    });
+
+    try {
+      final basket = await _cartService.removeItem(productId);
+      if (!mounted) return;
+      setState(() => _basket = basket);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Item removed from cart.')));
+    } on CartException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
     } finally {
       if (mounted) setState(() => _isUpdating = false);
     }
@@ -174,6 +235,7 @@ class _CartScreenState extends State<CartScreen> {
                     !_isUpdating && item.id != null && item.id! > 0;
                 return CartItemCard(
                   item: item,
+                  onDelete: canUpdate ? () => _removeItem(item) : null,
                   onAdd: canUpdate
                       ? () => _updateQuantity(item, item.quantity + 1)
                       : null,

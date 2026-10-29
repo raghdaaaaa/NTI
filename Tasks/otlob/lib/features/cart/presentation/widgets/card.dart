@@ -9,11 +9,13 @@ class CartItemCard extends StatelessWidget {
     required this.item,
     required this.onAdd,
     required this.onRemove,
+    required this.onDelete,
   });
 
   final CartItemModel item;
   final VoidCallback? onAdd;
   final VoidCallback? onRemove;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +72,26 @@ class CartItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: onDelete,
+                      tooltip: 'Remove ${item.name}',
+                      visualDensity: VisualDensity.compact,
+                      icon: const Icon(Icons.delete_outline),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
