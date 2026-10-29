@@ -1,3 +1,7 @@
+import 'dart:math' as math;
+
+const _baseUrl = 'https://talabat639.runasp.net';
+
 class CartItemModel {
   final int? id;
   final String name;
@@ -18,34 +22,23 @@ class CartItemModel {
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
-    final picture = json['pictureUrl']?.toString().trim();
     return CartItemModel(
-      id: _toInt(json['productId']) ?? _toInt(json['id']),
+      id: _toInt(json['productId'] ?? json['id']),
       name: json['productName']?.toString() ?? '',
       brand: json['brand']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
-      image: _resolvePictureUrl(picture),
-      price: _toDouble(json['price']),
-      quantity: (_toInt(json['quantity']) ?? 1).clamp(1, 0x7fffffff).toInt(),
+      image: _pictureUrl(json['pictureUrl']?.toString().trim()),
+      price: num.tryParse('${json['price']}')?.toDouble() ?? 0,
+      quantity: math.max(1, _toInt(json['quantity']) ?? 1),
     );
   }
 
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
-  }
+  static int? _toInt(dynamic value) => num.tryParse('$value')?.toInt();
 
-  static int? _toInt(dynamic value) {
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '');
-  }
-
-  static String? _resolvePictureUrl(String? picture) {
+  static String? _pictureUrl(String? picture) {
     if (picture == null || picture.isEmpty) return null;
     if (picture.startsWith('http')) return picture;
-    final path = picture.startsWith('/') ? picture.substring(1) : picture;
-    return 'https://talabat639.runasp.net/$path';
+    return '$_baseUrl/${picture.replaceFirst(RegExp(r'^/'), '')}';
   }
 }
 
@@ -56,24 +49,16 @@ class CustomerBasketModel {
   const CustomerBasketModel({this.id, required this.items});
 
   factory CustomerBasketModel.fromJson(Map<String, dynamic> json) {
-    final rawItems = json['items'];
-    if (rawItems != null && rawItems is! List) {
-      throw const FormatException('Basket items must be a list.');
-    }
-
+    final rawItems = (json['items'] as List?) ?? const [];
     return CustomerBasketModel(
       id: json['id']?.toString(),
-      items: (rawItems as List? ?? []).map((item) {
-        if (item is! Map) {
-          throw const FormatException('Basket item data is invalid.');
-        }
-        return CartItemModel.fromJson(Map<String, dynamic>.from(item));
-      }).toList(),
+      items: [
+        for (final item in rawItems)
+          CartItemModel.fromJson(Map<String, dynamic>.from(item as Map)),
+      ],
     );
   }
 }
 
-String formatBasketAmount(num amount) {
-  if (amount == amount.roundToDouble()) return amount.toStringAsFixed(0);
-  return amount.toStringAsFixed(2);
-}
+String formatBasketAmount(num amount) =>
+    amount.toStringAsFixed(amount == amount.roundToDouble() ? 0 : 2);
